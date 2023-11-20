@@ -30,7 +30,7 @@ title: "[SSL][CLS] Boosting Semi-Supervised Learning with Curriculum Pseudo Labe
 $$T_t(c)=\beta_t(c) \times \tau$$ 
 
 - $\beta_t(c)=\frac{\sigma_t(c)}{max_c\sigma_t}$
-- $\sigma_t(c)=\sum_{n=1}^N \mathbb{I}(max(p_{m,t}(y|u_n))>\tau)\times \mathbb{I}(argmax(p_{m,t}(y|u_n))=c)$
+- ![](../images/2023-11-20/스크린샷 2023-11-20 22-30-01.png)
 
 - T_t(c)$: t step에 c class의 threshold 가중치
 - $\tau$: fixed threshold (upper-bound)
@@ -43,7 +43,7 @@ $$T_t(c)=\beta_t(c) \times \tau$$
 $$L_{u,t}=\frac{1}{\mu B}\sum_{b=1}^{\mu B}\mathbb{I}(max(q_b)> T_t(argmax(q_b)))H(\hat{q}_b, p_m(y|\Omega(u_b)))$$
 
 - $\Omega$: strong augmentation
-- $q_b=p_m(y|w(u_b))$ 
+- ![](../images/2023-11-20/스크린샷 2023-11-20 22-30-42.png)
   - $w()$:weak augmentation
 
 ### Threshold  warm-up
