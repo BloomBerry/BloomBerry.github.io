@@ -27,12 +27,14 @@ title: "[SSL][CLS] Boosting Semi-Supervised Learning with Curriculum Pseudo Labe
 - Pseudo label이 예측한 class sample의 갯수에 비례해서 해당 class가 학습이 잘 되었다고 판단함
 - 따라서, 학습이 잘 안된 class는 더 많이 학습시키기 위해 Threshold를 낮춰줘야 함 (vice-versa)
 
-$T_t(c)=\beta_t(c) \times \tau$ where $\beta_t{c}=\frac{\sigma_t(c)}{max_c\sigma_t}$
+$$T_t(c)=\beta_t(c) \times \tau$$ 
 
+- $\beta_t(c)=\frac{\sigma_t(c)}{max_c\sigma_t}$
 - $\sigma_t(c)=\sum_{n=1}^N \mathbb{I}(max(p_{m,t}(y|u_n))>\tau)\times \mathbb{I}(argmax(p_{m,t}(y|u_n))=c)$
+
 - T_t(c)$: t step에 c class의 threshold 가중치
-- $\tau$: fixed threshold (upperbound)
-- $p_{m,t}(y|u_n)$: t step에서 unlabeled data $u_n$에 대한 모델의 예측값
+- $\tau$: fixed threshold (upper-bound)
+- $p_{m,t}(y|u_n)$: t step에서 unlabeled data에 대한 모델의 예측값
 
 ### Loss
 
@@ -41,7 +43,8 @@ $T_t(c)=\beta_t(c) \times \tau$ where $\beta_t{c}=\frac{\sigma_t(c)}{max_c\sigma
 $$L_{u,t}=\frac{1}{\mu B}\sum_{b=1}^{\mu B}\mathbb{I}(max(q_b)> T_t(argmax(q_b)))H(\hat{q}_b, p_m(y|\Omega(u_b)))$$
 
 - $\Omega$: strong augmentation
-- $q_b=p_m(y|w(u_b))$ where $w()$ is weak augmentation
+- $q_b=p_m(y|w(u_b))$ 
+  - $w()$:weak augmentation
 
 ### Threshold  warm-up
 
@@ -56,6 +59,10 @@ $$\beta_t(c)=\frac{\sigma_t(c)}{max\{max_c \sigma_t, N-\sum_c \sigma_t\}}$$
 $T_t(c)=M(\beta_t(c)) \times \tau$ where $M(x)=\frac{x}{2-x}$
 
 - $M$: monotone increasing convex function
+
+### Algorithm 
+
+![](../images/2023-11-20/스크린샷 2023-11-20 22-25-18.png)
 
 # 4. Experiments
 
