@@ -22,21 +22,21 @@ title: "[SSL][CLS] SoftMatch : Addressing the Quantity-Quality Trade-Off in Semi
 
 ## 2.1 Sample weighting 관점
 
-$$L_u=\frac{1}{B_u}\sum_{i=1}^{B_U}\lambda(\bold{p}_i)H(\hat{\bold{p}_i}, \bold{p}(\bold{y}|\Omega(\bold{x}_i^u)))$$
+$$L_u=\frac{1}{B_u}\sum_{i=1}^{B_U}\lambda(p_i)H(\hat{p_i}, p(y|\Omega(x_i^u)))$$
 
-- $\lambda(\bold{p}_i)$ : weighting function
+- $\lambda(p_i)$ : weighting function
 
-1. $f(\bold{p})$: Quantity of pseudo-labels
+1. $f(p)$: Quantity of pseudo-labels
 
-   - unlabeled data의 sample weight $\lambda(\bold{p})$의 평균치
+   - unlabeled data의 sample weight $\lambda(p)$의 평균치
 
-   $$f(\bold{p})=\mathbb{E}_{D_U}[\lambda(\bold{p})]\in[0, \lambda_{max}]$$
+   $$f(p)=\mathbb{E}_{D_U}[\lambda(p)]\in[0, \lambda_{max}]$$
 
-2. $g(\bold{p})$ : Quality of pseudo-labels
+2. $g(p)$ : Quality of pseudo-labels
 
    - pseudo label의 weighted 0/1 error![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-04-32.png)
 
-     $$\bar{\lambda}=\lambda(\bold{p})/\sum\lambda(\bold{p})$$
+     $$\bar{\lambda}=\lambda(p)/\sum\lambda(p)$$
 
      - probability mass function (PMF) of **p**
      - 이론상 계산하기 위해서만 unlabeled data의 GT를 활용
@@ -71,8 +71,8 @@ $$L_u=\frac{1}{B_u}\sum_{i=1}^{B_U}\lambda(\bold{p}_i)H(\hat{\bold{p}_i}, \bold{
 
   ![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-16-38.png)
 
-  - $\mathbb{E}_{D_U}[\bold{p}(\bold{y}|\bold{x^u})]$ : Unlabeled data의 model prediction의 평균 
-  - $\mathbb{E}_{B_U}[\bold{p}(\bold{y}|\bold{x^u})]$ : Batch 단위로 EMA업데이트한 $\mathbb{E}_{D_U}[\bold{p}(\bold{y}|\bold{x^u})]$의 근사값
+  - $\mathbb{E}_{D_U}[p(y|x^u)]$ : Unlabeled data의 model prediction의 평균 
+  - $\mathbb{E}_{B_U}[p(y|x^u)]$ : Batch 단위로 EMA업데이트한 $\mathbb{E}_{D_U}[p(y|x^u)]$의 근사값
 
 - 최종 SoftMatch식
 
