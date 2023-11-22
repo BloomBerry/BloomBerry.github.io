@@ -30,7 +30,7 @@ $$L_u=\frac{1}{B_u}\sum_{i=1}^{B_U}\lambda(p_i)H(\hat{p_i}, p(y|\Omega(x_i^u)))$
 
    - unlabeled data의 sample weight $\lambda(p)$의 평균치
 
-   $$f(p)=\mathbb{E}_{D_U}[\lambda(p)]\in[0, \lambda_{max}]$$
+   ![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-33-05.png)
 
 2. $g(p)$ : Quality of pseudo-labels
 
@@ -71,8 +71,8 @@ $$L_u=\frac{1}{B_u}\sum_{i=1}^{B_U}\lambda(p_i)H(\hat{p_i}, p(y|\Omega(x_i^u)))$
 
   ![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-16-38.png)
 
-  - $\mathbb{E}_{D_U}[p(y|x^u)]$ : Unlabeled data의 model prediction의 평균 
-  - $\mathbb{E}_{B_U}[p(y|x^u)]$ : Batch 단위로 EMA업데이트한 $\mathbb{E}_{D_U}[p(y|x^u)]$의 근사값
+  - ![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-34-32.png) : Unlabeled data의 model prediction의 평균 
+  - ![](../images/2023-11-22/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-34-09.png) : Batch 단위로 EMA업데이트한 ![](../../../Pictures/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-22%2021-34-32.png)의 근사값
 
 - 최종 SoftMatch식
 
