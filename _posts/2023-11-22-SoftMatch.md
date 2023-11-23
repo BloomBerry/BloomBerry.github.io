@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "[SSL][CLS] SoftMatch : Addressing the Quantity-Quality Trade-Off in Semi-Supervised Learning"
 ---
 # [SSL][CLS\] SoftMatch : Addressing the Quantity-Quality Trade-Off in Semi-Supervised Learning
