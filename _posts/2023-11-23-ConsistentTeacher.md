@@ -1,4 +1,4 @@
-지수님이 CVPR방문 시, 꼭 들어줄 논문인지 판단하는 것이 목적
+# [SSL][OD\] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection
 
 - paper link : https://arxiv.org/pdf/2209.01589.pdf
 - github: https://github.com/Adamdad/ConsistentTeacher
