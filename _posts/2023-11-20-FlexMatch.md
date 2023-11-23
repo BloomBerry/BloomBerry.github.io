@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "[SSL][CLS] Boosting Semi-Supervised Learning with Curriculum Pseudo Labeling"
 ---
 # [SSL][CLS\] FlexMatch: Boosting Semi-Supervised Learning with Curriculum Pseudo Labeling
