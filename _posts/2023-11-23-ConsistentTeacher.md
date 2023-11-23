@@ -1,5 +1,6 @@
-# [SSL][OD\] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection
-
+---
+title: [SSL][OD\] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection
+---
 - paper link : https://arxiv.org/pdf/2209.01589.pdf
 - github: https://github.com/Adamdad/ConsistentTeacher
 - CVPR 2023 accpet ed (SenseTime Research, 인용수 : 8회, '23.11.23 기준)
