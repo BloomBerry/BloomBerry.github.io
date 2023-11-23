@@ -40,12 +40,12 @@ title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targe
    2. 개선점: Gaussian distribution으로 계산한 pos/neg 사전 확률값을 EM (Expectation Maximization) algorithm을 이용하여 “student 를 위한 pseudo-target으로 setting될 확률 (사후확률)”을 max로 하도록 하는 tau값을 iteration마다 구해준다.
 4. SSL for OD에서 SOTA 달성함
 
-# 3. Baseline Model
+# 3. Consistent Teacher
+
+- Baseline Model
 
 - FCOS기반의 Mean Teacher를 사용
   - 단 IoU는 GIoU Loss, cls 는 Focal Loss를 사용
-
-# 4. Consistent Teacher
 
 - overall diagram
 
