@@ -77,9 +77,12 @@ title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targe
 
 - 참고한 논문의 FAM-2D를 설명한 자료
 
-  ![](../images/2023-11-23/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-23%2022-01-01.png)
+  - W가 뭔지 나중에 확인
 
+  ![](../images/2023-11-23/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-23%2022-01-01.png)
+  
   ![](../images/2023-11-23/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-23%2022-01-26.png)
+  
 
 ## 4.3 Thresholding with Gaussian Mixture Model
 
