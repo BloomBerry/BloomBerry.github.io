@@ -1,5 +1,5 @@
 ---
-title: "[SSL][OD\] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection"
+title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection"
 ---
 - paper link : https://arxiv.org/pdf/2209.01589.pdf
 - github: https://github.com/Adamdad/ConsistentTeacher
