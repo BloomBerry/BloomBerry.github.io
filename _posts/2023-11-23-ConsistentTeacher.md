@@ -1,6 +1,8 @@
 ---
 title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection"
 ---
+# [SSL][OD\] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targets in Semi-supervised Object Detection
+
 - paper link : https://arxiv.org/pdf/2209.01589.pdf
 - github: https://github.com/Adamdad/ConsistentTeacher
 - CVPR 2023 accpet ed (SenseTime Research, 인용수 : 8회, '23.11.23 기준)
@@ -53,7 +55,7 @@ title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targe
 
 - 쉽게 말해 cost를 기준으로 anchor를 올림차순 해서 top-k개의 loss가 작은 k개를 anchor로 할당
 - cost가 minimize되는 순으로 모든 gt box에 대한 모든 anchor에 대해 오름차순으로 정렬한 후, matching된 anchor들의 IoU총합을 clamp (ex. 8.xx → 8개) 를 positive로 할당한다. 
-- 나머지는 negative로 할당한다. (ignore는 ?) → if 15개가 IoU >0이고, IoU총합이 8.xx이면 8개는 positive, 나머지는 negative.
+- 나머지는 negative로 할당한다. → if 15개가 IoU >0이고, IoU총합이 8.xx이면 8개는 positive, 나머지는 negative.
 
 ![](../images/2023-11-23/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-23%2021-41-33.png)																																																																																																																																																																																																																																																															
 
@@ -67,9 +69,9 @@ title: "[SSL][OD] Consistent-Teacher: Towards Reducing Inconsistent Pseudo-targe
 
 ## 4.2 BBox Consistency via 3-D Feature Alignment
 
-- $\bold{P}(i,j,l)$: (i,j)에 위치한 l번째 pyramid level layer를 의미
+- $P(i,j,l)$: (i,j)에 위치한 l번째 pyramid level layer를 의미
 
-- Feature Alignment의 역할 : $\bold{s}(\bold{P}) \to \bold{P}'$로 re-sampling하여 regression task를 수행하는 feature가 classification feature와 잘 align 되도록 re-ordering
+- Feature Alignment의 역할 : $s(P) \to P'$로 re-sampling하여 regression task를 수행하는 feature가 classification feature와 잘 align 되도록 re-ordering
 
   ![](../images/2023-11-23/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-11-23%2021-59-24.png)
 
