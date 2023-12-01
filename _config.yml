@@ -117,7 +117,7 @@ author:
       icon: "fas fa-fw fa-link"
       url: "https://BloomBerry.github.io"
     - label: "LinkedIn"
-      icon: "fab fa-fw fa-linkedin-square"
+      icon: "../images/Screenshot from 2023-12-01 09-00-11.png"
       url: "https://www.linkedin.com/in/jooyoung-jang/"
     - label: "Facebook"
       icon: "fab fa-fw fa-facebook-square"
