@@ -1,5 +1,5 @@
 ---
-title: "[DG][OD\] CLIP the Gap: A Single Domain Generalization Approach for Object Detection"
+title: "[DG][OD] CLIP the Gap: A Single Domain Generalization Approach for Object Detection"
 ---
 # [DG][OD\] CLIP the Gap: A Single Domain Generalization Approach for Object Detection
 
