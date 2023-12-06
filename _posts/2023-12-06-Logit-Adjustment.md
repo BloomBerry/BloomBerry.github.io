@@ -26,9 +26,9 @@ title: "[LT][CLS] Long-Tail Learning via Logit Adjustment"
 
       - Balanced Error : Imbalance classification에서 주로 사용하는 Loss (or Metric)
 
-        가령, native $\mathbb{P}(y|x) \propto \mathbb{P}(y) \mathbb{P}(x|y)$ dominant class로만 예측하면 accuracy가 증가하는 문제가 있음
+        가령, native ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2022-44-43.png) dominant class로만 예측하면 accuracy가 증가하는 문제가 있음
 
-        하지만, $\mathbb{P}^{bal}(y|x) \propto \frac{1}{L} \mathbb{P}(x|y)$는 $\mathbb{P}(y)$에 dependent하지 않음
+        하지만, ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2022-45-12.png)는 ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2022-46-03.png)에 dependent하지 않음
 
         ![](../images/2023-12-06/image-20231206171002527.png)
 
@@ -77,7 +77,7 @@ title: "[LT][CLS] Long-Tail Learning via Logit Adjustment"
 
 ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2021-46-29.png)
 
-- $\nu_y$: weight term for label $y$. could be $||w_y||_2$ or $\mathbb{P}_y$
+- $\nu_y$: weight term for label $y$. could be weight 2-norm or label y's distribution
 
 - $\Phi(x)$: feature before classification weight of input $x$
 
@@ -125,8 +125,8 @@ title: "[LT][CLS] Long-Tail Learning via Logit Adjustment"
 
 - 위 식을 optimize하기 위한 두 가지 방법
 
-1. Post-hoc: 기존의 standard $\mathbb{P}(y|x)$를 학습시키고, class prior $y$의 분포에 대한 log값을 빼준다.
-2. Train: $\mathbb{P}^{bal}(y|x)$을 위 식처럼 수정해서 학습한다.
+1. Post-hoc: 기존의 standard ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2022-48-16.png)를 학습시키고, class prior y의 분포에 대한 log값을 빼준다.
+2. Train: ![](../images/2023-12-06/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-06%2022-48-58.png)을 위 식처럼 수정해서 학습한다.
 
 # 5. Post-hoc Adjustment
 
