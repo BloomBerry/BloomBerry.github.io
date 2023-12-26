@@ -15,7 +15,7 @@ title: "[OD] DEFORMABLE DETR: Deformable Transformers for End-to-End Object Dete
 
   - sparse sampling attention map생성
 
-    ![](images/2023-12-24//image-20231224155939103.png)
+    ![](../images/2023-12-24//image-20231224155939103.png)
 
   # 2. Contribution
 
@@ -27,11 +27,11 @@ title: "[OD] DEFORMABLE DETR: Deformable Transformers for End-to-End Object Dete
 
 - Original DETR
 
-  ![](images/2023-12-24//image-20231224163234483.png)
+  ![](../images/2023-12-24//image-20231224163234483.png)
 
   - **W**$_m$, **W**$'_m$: $\mathbb{R}^{C_v \times C}$, learnable weights ($C_v=C/M$)
 
-  - ![](images/2023-12-24//image-20231224163434199.png)
+  - ![](../images/2023-12-24//image-20231224163434199.png)
 
     - **U**$_m$, **V**$_m$: $\mathbb{R}^{C_v \times C}$, learnable weights
     - $\Sigma_{k \in \Omega_k}A_{mqk}=1$
@@ -56,11 +56,11 @@ title: "[OD] DEFORMABLE DETR: Deformable Transformers for End-to-End Object Dete
 
   - Diagram
 
-    ![](images/2023-12-24//image-20231224164544803.png)
+    ![](../images/2023-12-24//image-20231224164544803.png)
 
   - Equation
 
-    ![](images/2023-12-24//image-20231224165600990.png)
+    ![](../images/2023-12-24//image-20231224165600990.png)
 
     - **p**$_q$: 2-Dim real numbers, $ \in \mathbb{R}^2$, object query로부터 linear projection해서 embedding
 
@@ -70,7 +70,7 @@ title: "[OD] DEFORMABLE DETR: Deformable Transformers for End-to-End Object Dete
 
   - Multi-Scale Deformable Attention
 
-    ![](images/2023-12-24//image-20231224165802663.png)
+    ![](../images/2023-12-24//image-20231224165802663.png)
 
     - $M,K,L$: multi-head 갯수, Key-point 갯수, Layer 갯수
 
@@ -78,31 +78,31 @@ title: "[OD] DEFORMABLE DETR: Deformable Transformers for End-to-End Object Dete
 
   - Initialization
 
-    ![](images/2023-12-24//image-20231224170250207.png)
+    ![](../images/2023-12-24//image-20231224170250207.png)
 
   ## 3.2 Iterative Bounding Box Refinement
 
-  ![](images/2023-12-24//image-20231224170053220.png)
+  ![](../images/2023-12-24//image-20231224170053220.png)
 
   ## 3.3 Two-stage Deformable DETR
 
   - 3FFN layer로 구성되어 box regression하고, deformable detr의 decoder object query의 입력을 생성해줌
 
-    ![](images/2023-12-24//image-20231224170205426.png)
+    ![](../images/2023-12-24//image-20231224170205426.png)
 
 # 4. Experiments
 
 - MS COCO vs. DETR
 
-  ![](images/2023-12-24//image-20231224170437553.png)
+  ![](../images/2023-12-24//image-20231224170437553.png)
 
-  ![](images/2023-12-24//image-20231224170452867.png)
+  ![](../images/2023-12-24//image-20231224170452867.png)
 
 - Ablation Studies
 
-  ![](images/2023-12-24//image-20231224170512298.png)
+  ![](../images/2023-12-24//image-20231224170512298.png)
 
   - FPN의 유무에 따른 성능 차이가 없음. 이는 attention에서 이미 cross-level 이 적용되었기 때문.
 
 - MS-COCO vs. SOTA
-  ![](images/2023-12-24//image-20231224170645995.png)
+  ![](../images/2023-12-24//image-20231224170645995.png)
