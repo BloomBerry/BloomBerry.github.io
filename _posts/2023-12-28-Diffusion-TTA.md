@@ -96,37 +96,37 @@ title: "[GM][TTT] Diffusion-TTA: Test-time Adaptation of Discriminative Models v
 
 - ImageNet Variants vs. SOTA TTA
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-34-39.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-34-39.png)
 
 - ImageNet-C specific results
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-35-15.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-35-15.png)
 
 - 정석적 분석
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-46-39.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-46-39.png)
 
 - Open-Vocabulary CLIP classifiers
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-35-55.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-35-55.png)
 
 - Segmentation & Depth Estimation
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-36-39.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-36-39.png)
 
 - Segmentation 정성적 분석
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-37-06.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-37-06.png)
 
 - Ablation of hyperparameters
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-37-37.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-37-37.png)
 
   - +diffusion loss TTA: diffusion loss로 single randomly sampled time step으로 학습 수행 (-2.9%)
 
     - 정답 logit에 대해서 모든 step에서 loss가 상대적으로 다른 class logit에 비해 작지 않기 때문에 누진해서 학습해야 함
 
-      ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-40-43.png)
+      ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-40-43.png)
 
   - +timestep aug: batchsize 를 accumulate해서 $1 \to 180$로 키우면 성능이 크게 증가함 (+4.8%)
 
@@ -136,7 +136,7 @@ title: "[GM][TTT] Diffusion-TTA: Test-time Adaptation of Discriminative Models v
 
 - Ablation of parameters/layers to adapt
 
-  ![](../images/2023-12-25/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-43-31.png)
+  ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-28%2021-43-31.png)
 
   - random init: pretrained weight대신 random initial weight 사용 (no adapt)
   - adapt logits: diffusion loss 기준으로 logit만 adapt
