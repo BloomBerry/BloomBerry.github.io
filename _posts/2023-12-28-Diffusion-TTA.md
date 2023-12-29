@@ -11,7 +11,7 @@ title: "[GM][TTT] Diffusion-TTA: Test-time Adaptation of Discriminative Models v
 # 1. Motivation
 
 - Diffusion 기반의 Generative Model의 성능이 향상됨에 따라 이를 어떻게 잘 활용하여 TTA를 수행할 수 있을까? 하는 의문이 생기게 됨
-  - discriminator의 경우, $p(y$|$x$)를 mapping하는 과정을 학습하는데 비해, generator는 $p(y$|$x$)를 학습하게 됨 $\to$ Inverted using Bayes Rule을 하면 iterative 하게 inference를 할 수 있게됨
+  - discriminator의 경우, ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-29%2021-57-06.png)를 mapping하는 과정을 학습하는데 비해, generator는 ![](../images/2023-12-28/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202023-12-29%2021-57-27.png)를 학습하게 됨 $\to$ Inverted using Bayes Rule을 하면 iterative 하게 inference를 할 수 있게됨
   - Generator의 task가 더 어렵기 때문에, data의 maximum likelyhood를 학습하는 과정을 통해 data에 대한 미묘한 차이도 학습할 능력이 생길 수 있게됨 (Nuance understanding of data)
 - Discriminator가 생성한 결과를 가지고 Conditional Diffusion의 condition을 생성해서 maximum likelyhood를 높여보자!
   - inverting generative model의 경우 OOD (Out-of-Distribution) 이미지에 대해 generalize한 특성이 있다고 알려짐 $\to$ TTA에 적합!
