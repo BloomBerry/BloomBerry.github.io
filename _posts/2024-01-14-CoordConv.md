@@ -17,20 +17,20 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
 - Supervised Classification / Regression 그리고 Rendering을 할 수 있는 "Not-so-Clever" toy-dataset을 제안한다.
 
-  ![](images/2024-01-14/image-20240114200506426.png)
+  ![](../images/2024-01-14/image-20240114200506426.png)
 
   - uniform: train-test split을 random sampling으로 split한 protocol. 그림 (b) 1열
   - quadratic: train-test split을 1~3 사분면을 train, 4 사분면을 test로 split한 protocol. 그림 (b) 2열 참고
 
 - 코드 몇줄로 구현 가능한 convolution filter에게 pixel coordinate 정보를 제공해주는 "CoordConv" filter를 제안한다. 
 
-  ![](images/2024-01-14/image-20240114201422796.png)
+  ![](../images/2024-01-14/image-20240114201422796.png)
 
-  ![](images/2024-01-14/image-20240114201438513.png)
+  ![](../images/2024-01-14/image-20240114201438513.png)
 
 - Simple task 들 (Supervised Classification / Regression / Rendering)부터 complex task (OD/CLS/GM)까지 CoordConv의 효과를 입체적으로 살펴본다.
 
-  ![](images/2024-01-14/image-20240114200954707.png)
+  ![](../images/2024-01-14/image-20240114200954707.png)
 
   - Supervised Classification task : 각 pixel 좌표를 class로 가정한 task
     - input : (x,y) 좌표
@@ -50,7 +50,7 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
 - overview
 
-  ![](images/2024-01-14/image-20240114201631869.png)
+  ![](../images/2024-01-14/image-20240114201631869.png)
 
 - <u>downstream task에 따라</u> 기존 Convolution layer처럼 <u>Translation invariance</u>하게 학습할 수도 있고, <u>translation variance</u>하게 학습할 수 도 있는 "CoordConv"를 제안함
 
@@ -62,7 +62,7 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
     - +3의 경우 x, y뿐 아니라 r을 추가함
 
-      ![](images/2024-01-14/image-20240114211105040.png)
+      ![](../images/2024-01-14/image-20240114211105040.png)
 
   특징 1. 현존하는 gpu architecture에서 computationally efficient함 (왜? original conv. layer와 동일한 연산이기 때문)
 
@@ -82,7 +82,7 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
 - Train accuracy vs. Test accuracy / Train time vs. Test accuracy
 
-  ![](images/2024-01-14/image-20240114211707310.png)
+  ![](../images/2024-01-14/image-20240114211707310.png)
 
   - Conv.의 경우, uniform은 잘 안되고, quadrant의 경우 test accuracy가 0이 나옴.
   - 반면 CoordConv.의 경우 uniform / quadrant 모두 잘되며 학습도 매우 빠름
@@ -91,11 +91,11 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
 - CoordConv. > Conv.
 
-  ![](images/2024-01-14/image-20240114211958666.png)
+  ![](../images/2024-01-14/image-20240114211958666.png)
 
 ## 4.3. Supervised Rendering
 
-![](images/2024-01-14/image-20240114212048645.png)
+![](../images/2024-01-14/image-20240114212048645.png)
 
 ## 4.4. Other tasks
 
@@ -107,11 +107,11 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
   - Conv. $\to$ CoordConv.로 바뀜
 
-    ![](images/2024-01-14/image-20240114212519466.png)
+    ![](../images/2024-01-14/image-20240114212519466.png)
 
   - 64x64 MNist data를 localization하는 task. test IoU 24% 향상됨
 
-    ![](images/2024-01-14/image-20240114212451354.png)
+    ![](../images/2024-01-14/image-20240114212451354.png)
 
 - Generaltive Modeling
 
@@ -119,4 +119,4 @@ title: "[OD][CLS][GM][RL] An Intriguing Failing of Convolutional Neural Networks
 
   - 기존 Conv. GAN은 2-d. input에 대해 1-d로 mode collapse 발생함을 확인. CoordConv.는 이를 해결함
 
-    ![](images/2024-01-14/image-20240114212810716.png)
+    ![](../images/2024-01-14/image-20240114212810716.png)
