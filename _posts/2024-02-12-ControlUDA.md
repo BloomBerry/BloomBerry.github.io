@@ -67,7 +67,7 @@ title: "[MTUDA][DM][SS] ControlUDA: Controllable Diffusion-assisted Unsupervised
 
   ![](../images/2024-02-12/image-20240212225735400.png)
 
-  - $\z^T$: N(0,1)
+  - $z^T$: N(0,1)
   - $c_{\(j)}^p$: j번째 target sub domain의 condition
   - D: Decoder
 
