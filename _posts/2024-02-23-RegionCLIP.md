@@ -1,4 +1,7 @@
-# [MM]\[OD] RegionCLIP: Region-based Language-Image Pretraining
+---
+title: "[MM][OD] RegionCLIP: Region-based Language-Image Pretraining"
+---
+# [MM][OD] RegionCLIP: Region-based Language-Image Pretraining
 
 - paper: https://arxiv.org/pdf/2112.09106.pdf
 - github: https://github.com/microsoft/RegionCLIP
