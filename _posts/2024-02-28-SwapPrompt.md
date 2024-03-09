@@ -1,8 +1,7 @@
 ---
 title: "[TTA][VLM] SwapPrompt: Test-Time Prompt Adaptation for"
 ---
-# [TTA][VLM] SwapPrompt: Test-Time Prompt Adaptation for
-Vision-Language Models
+# [TTA][VLM] SwapPrompt: Test-Time Prompt Adaptation for Vision-Language Models
 
 - paper: https://openreview.net/pdf?id=EhdNQiOWgQ
 - github: x
