@@ -47,7 +47,7 @@ title: "[AR] TimeSFormer: Is Space-Time Attention All You Need for Video Underst
     - p: patch index
     - t: frame index
 
-  - linear embedding : patch $x_{(p,t)} \to \bold{z}_{(p,t)}^{(0)}$로 mapping
+  - linear embedding : patch $x_{(p,t)} \to z_{(p,t)}^{(0)}$로 mapping
 
     ![](../images/2024-03-19/image-20240319092544341.png)
 
@@ -69,8 +69,8 @@ title: "[AR] TimeSFormer: Is Space-Time Attention All You Need for Video Underst
     ![](../images/2024-03-19/image-20240319092805807.png)
 
     - SM: softmax function
-    - $\bold{a}_{(l,a)}^{(l,a)}$: l번째 block의 a번째 head의 p번째 patch의 t번째 frame의 attention weight
-    - ViT처럼 classification token $\bold{z}_{(0,0)}^{(l,a)}$를 붙임
+    - $a_{(l,a)}^{(l,a)}$: l번째 block의 a번째 head의 p번째 patch의 t번째 frame의 attention weight
+    - ViT처럼 classification token $z_{(0,0)}^{(l,a)}$를 붙임
 
 - Encoding
 
