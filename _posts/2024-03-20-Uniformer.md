@@ -26,7 +26,7 @@ title: "[AR] UNIFORMER: UNIFIED TRANSFORMER FOR EFFICIENT SPATIOTEMPORAL REPRESE
 
     $\to$두 장점을 조합하면 최상의 성능이 나오지 않을까?
 
-# 2. Contriburion
+# 2. Contribution
 
 - 3가지 새로운 모듈을 제안한 Uniformer를 제안함
   - Multi-Head Relation Aggregation (MHRA)
