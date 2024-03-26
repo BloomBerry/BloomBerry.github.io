@@ -64,7 +64,7 @@ title: "[AR] UNIFORMERV2: SPATIOTEMPORAL LEARNING ARMING IMAGE VITS WITH VIDEO U
 
   - 초기값은 zero로
 
-- $1 \times H \times W$의 spatial tube (1-frame) 내의 전체 token을 neighbor로 활
+- $1 \times H \times W$의 spatial tube (1-frame) 내의 전체 token을 neighbor로 활용
 
   ![](../images/2024-03-25/image-20240325092219677.png)
 
@@ -165,14 +165,14 @@ title: "[AR] UNIFORMERV2: SPATIOTEMPORAL LEARNING ARMING IMAGE VITS WITH VIDEO U
 
   ![](../images/2024-03-25/image-20240325094904567.png)
 
-  (a) Component 유/무에 따른 성능비교
+  (a) Component 유/무에 따른 성능 비교
 
-  (b) Local UniBlock의 Local MHRA에 따른 성능비교
+  (b) Local UniBlock의 Local MHRA에 따른 성능 비교
 
   (c) Global UniBlock에 따른 성능 비교
 
-  (d) Multi-stage Fusion 4가지 방식에 따른 성능비교
+  (d) Multi-stage Fusion 4가지 방식에 따른 성능 비교
 
-  (e) 학습 script에 따른 성능비교
+  (e) 학습 script에 따른 성능 비교
 
   
