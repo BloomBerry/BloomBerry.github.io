@@ -1,8 +1,7 @@
 ---
-title: "[DM] DreamBooth: Fine Tuning Text-to-Image Diffusion Models"
+title: "[DM] DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation"
 ---
-# [DM] DreamBooth: Fine Tuning Text-to-Image Diffusion Models
-for Subject-Driven Generation
+# [DM] DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation
 
 - paper: https://arxiv.org/pdf/2208.12242.pdf
 - github: https://dreambooth.github.io/
