@@ -101,7 +101,7 @@ title: "[AR] VideoMAE V2: Scaling Video Masked Autoencoders with Dual Masking"
 - Progressive Training
 
   - Direct adaptation보다 post-pretraining step을 통해 gradually fintuning으로 adapt하는게 효과적임
-  - Labeled hybrid video dataset을 통해 현
+  - Labeled hybrid video dataset을 통해 구현
 
   
 
