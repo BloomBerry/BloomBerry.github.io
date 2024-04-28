@@ -30,7 +30,7 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   - Input
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428141944535.png)
+    ![](../images/2024-04-28//image-20240428141944535.png)
 
     - *v*: layout에 관한 geometric condition. 여기서는 text를 활용
     - $c_i$: i번째 layout의 class
@@ -38,7 +38,7 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   - Output
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142134989.png)
+    ![](../images/2024-04-28//image-20240428142134989.png)
 
     - *g*: generation model
     - z: latent variable
@@ -46,7 +46,7 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   - Conditional Diffusion Model
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142316637.png)
+    ![](../images/2024-04-28//image-20240428142316637.png)
 
     - *y*: condition given by text
     - $\tau_{\theta}$: conditional encoder
@@ -57,31 +57,31 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   - Location Token
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142743979.png)
+    ![](../images/2024-04-28//image-20240428142743979.png)
 
     - bbox 정보는 태생적으로 continuous한 정보를 포함하므로, tokenize가 불가능
 
     - "Pix2Seq" 논문에서 영감을 받아, discretized bin으로 location 정보를 변환하여 tokenize 수행
 
-      ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142809927.png)
+      ![](../images/2024-04-28//image-20240428142809927.png)
 
       - *T*: Location set of token
 
-        ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142847426.png)
+        ![](../images/2024-04-28//image-20240428142847426.png)
 
       - $\sigma$: discretized box token
 
     - Layout information : 3개의 token들로 구성
 
-      ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428142940311.png)
+      ![](../images/2024-04-28//image-20240428142940311.png)
 
   - Prompt construction
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428143123605.png)
+    ![](../images/2024-04-28//image-20240428143123605.png)
 
 ## 3.2 Foreign Prompt Reweighting
 
-![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144304753.png)
+![](../images/2024-04-28//image-20240428144304753.png)
 
 - Forground에 비해 Background의 차지 공간이 imbalance하게 커서, 생성된 이미지가 forground에 집중하기 힘듦
 
@@ -89,7 +89,7 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   $\to$이를 해결하고자 reweighting 수행
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428143253270.png)
+  ![](../images/2024-04-28//image-20240428143253270.png)
 
   - *w*: >1보다 큰 masking weight
   - $c_{ij}^p$: (i,j)째 pixel이 속한 instance의 area
@@ -98,7 +98,7 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
 - GeoDiffusion Loss
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428143447510.png)
+  ![](../images/2024-04-28//image-20240428143447510.png)
 
 # 4. Experiments
 
@@ -117,34 +117,34 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
 - NuImages Fidelity Result
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428143517277.png)
+  ![](../images/2024-04-28//image-20240428143517277.png)
 
 - NuImages Trainability Result
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144100975.png)
+  ![](../images/2024-04-28//image-20240428144100975.png)
 
 - NuImages Trainability for differnt budget of real images
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144436483.png)
+  ![](../images/2024-04-28//image-20240428144436483.png)
 
   - data가 부족할수록, 생성된 이미지로 인한 OD 성능 gain이 더 증가함
   - 75%만 가지고 100% 보다 좋은 성능 (37.3 vs. 36.9)
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144410164.png)
+  ![](../images/2024-04-28//image-20240428144410164.png)
 
 - NuImages 정석적 평가
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144208962.png)
+  ![](../images/2024-04-28//image-20240428144208962.png)
 
 - NuImages Generalizability 평가
 
   - layout bbox shift & flip 수행했음에도 비탈길을 만들면서 semantic meaning을 훼손하지 않으며 이미지가 생성됨 (1행 4열 참고)
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144859105.png)
+    ![](../images/2024-04-28//image-20240428144859105.png)
 
   - OOD bbox 크기 및 class에 따른 generalizability 평가
 
-    ![image-20240428145608495](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145608495.png)
+    ![image-20240428145608495](../images/2024-04-28//image-20240428145608495.png)
 
     - OOD 크기는 robust하게 잘 생성
     - OOD class는 잘못 생성 $\to$ text encoder finetuning 과정에서 catastrophic forgetting 발생한 것으로 사료됨
@@ -156,11 +156,11 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
   - Generation Fidelity
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428144951624.png)
+    ![](../images/2024-04-28//image-20240428144951624.png)
 
   - Generation Trainability
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145019721.png)
+    ![](../images/2024-04-28//image-20240428145019721.png)
 
   - Generation Inpainting Result
 
@@ -168,40 +168,40 @@ title: "[GM][OD] GEODIFFUSION: TEXT-PROMPTED GEOMETRIC CON- TROL FOR OBJECT DETE
 
       - Fidelity와 유사하게 YoLo모델을 기반으로한 YoLo Score를 가지고 비교
 
-      ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145130129.png)
+      ![](../images/2024-04-28//image-20240428145130129.png)
 
     - 정성적
 
-      ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145205121.png)
+      ![](../images/2024-04-28//image-20240428145205121.png)
 
 - Ablation Studies
 
   - Box bin 크기에 따른 성능 비교 : bin이 정교할수록 좋음
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145240469.png)
+    ![](../images/2024-04-28//image-20240428145240469.png)
 
   - Reweighting 유무 / Pretrained weight에 따른 비교
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145334740.png)
+    ![](../images/2024-04-28//image-20240428145334740.png)
 
 - Geometric condition 유무 & learnable Location token에 따른 성능 비교
 
-  ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145419548.png)
+  ![](../images/2024-04-28//image-20240428145419548.png)
 
 - Other Applications
 
   - Domain Adaptation
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145714334.png)
+    ![](../images/2024-04-28//image-20240428145714334.png)
 
     - domain 특성을 text로 입력하여 생성 가능
 
   - 3D-OD 생성
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145809072.png)
+    ![](../images/2024-04-28//image-20240428145809072.png)
 
     - 2D-OD와 동일하게 local bin으로 descritize하여 실험 가능
 
   - Long-tailed class 생성 가능 : LVIS dataset
 
-    ![](/Users/jooyoungjang/Downloads/papers/images/2024-04-28//image-20240428145841610.png)s
+    ![](../images/2024-04-28//image-20240428145841610.png)s
