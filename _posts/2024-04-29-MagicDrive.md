@@ -1,9 +1,7 @@
 ---
-title: "[GM][3DOD] MAGIC DRIVE : STREET VIEW GENERATION WITH"
+title: "[GM][3DOD] MAGIC DRIVE : STREET VIEW GENERATION WITH DIVERSE 3D GEOMETRY CONTROL"
 ---
-# [GM][3DOD] MAGIC DRIVE : STREET VIEW GENERATION WITH
-
-DIVERSE 3D GEOMETRY CONTROL
+# [GM][3DOD] MAGIC DRIVE : STREET VIEW GENERATION WITH DIVERSE 3D GEOMETRY CONTROL
 
 - paper: https://arxiv.org/pdf/2310.02601
 - github: https://github.com/cure-lab/MagicDrive
@@ -96,7 +94,7 @@ DIVERSE 3D GEOMETRY CONTROL
 
 - $t, l, r$: target view, left view, right view
 
-- **h**^v: hidden state of target view
+- **h**$^v$: hidden state of target view
 
 - 정성적 비교 (vs. BEVControl)
 
