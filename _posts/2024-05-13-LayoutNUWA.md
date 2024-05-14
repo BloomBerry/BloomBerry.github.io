@@ -23,7 +23,7 @@ title: "[L][LG] LayoutNUWA: Revealing The Hidden Layout Expertise of Large Langu
 
 - Problem Formulation
 
-  - Definition: \S=\{s_i\}_{i=1}^N의 well-organized Layout을 생성하는 임무
+  - Definition: $S=\{s_i\}_{i=1}^N$의 well-organized Layout을 생성하는 임무
 
     - N: layout에 있는 element의 갯수
 
