@@ -55,7 +55,7 @@ title: "[LG] Spot the Error: Non-autoregressive Graphic Layout Generation with W
 
     ![](../images/2024-05-22/image-20240522231539301.png)
 
-- Finding1. NAR은 AR보다 input element order에 robust하 $\to$ 앞서 설명
+- Finding1. NAR은 AR보다 input element order에 robust함 $\to$ 앞서 설명
 
   - overlap 기준으로 비교
 
