@@ -40,7 +40,7 @@ title: "[LG] LayoutGAN: Generating Graphic Layouts with Wireframe Discriminators
 
     - output: refined graphic elements
 
-    - inital graphic element **z**를 입력받아, 학습 데이터의 graphic element structure를 예측
+    - initial graphic element **z**를 입력받아, 학습 데이터의 graphic element structure를 예측
 
       ![](../images/2024-05-30/image-20240531165450145.png)
 
@@ -71,7 +71,7 @@ title: "[LG] LayoutGAN: Generating Graphic Layouts with Wireframe Discriminators
 
           ![](../images/2024-05-30/image-20240531170353317.png)
 
-          - **g**: max-polling
+          - **g**: max-pooling
 
           - **r**: self-attention w/o residual
 
