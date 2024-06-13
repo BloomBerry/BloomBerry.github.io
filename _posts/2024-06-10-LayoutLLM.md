@@ -25,7 +25,6 @@ title: "[MM][LLM] LayoutLLM: Layout Instruction Tuning with Large Language Model
 - Document의 layout을 더 잘 이해하기 위해 **3가지 다른 레벨**의 **pretraining task**를 **Instruction-tuning** 기반으로 고안함
 
   - 3-level: <u>document-level, region-level, segment-level</u>  $\to$ Global & Local content에 대한 이해도를 고루 향상
-  - Instruction-tuning: 
   - Document pretrained model을 leverage하여 사용
 
 - LLM의 Chain-of-Thought (CoT)에서 영감을 받아 새로운 Layout-aware supervised finetuning기법인 LayoutCoT을 고안함.
