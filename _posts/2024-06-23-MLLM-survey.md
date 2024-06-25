@@ -110,17 +110,41 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
   ![](images/2024-06-24/image-20240624234238241.png)
 
+  - Coarse-grained : Web-crawled data 특성상 규모가 크고, noisy & short caption이 특징.
+    - CC-3M/CC-12M
+      - 부적절한 Aspect ratio / size image는 fitering
+      - NLP tool로 text annotation을 얻되, Heuristic design에 의해 filtering
+    - SBU Captions (Flicklr에서 추출, 1M)
+      - Heuristic하게 caption이 충분히 길 경우만 취득
+      - 전치사와 pre-defined word가 존재할 경우만 취득
+    - LAION
+      - 너무 큰/작은 image, 짧은 text length는 filtering
+      - URL에 의거 duplicate된 이미지 fitering
+      - CLIP embedding 추출하여 illigal content, text&image similarity score 낮은 이미지 filtering
+        - LAION-COCO: LAION-5B dataset 중 영어에 대해서만 사용. Caption은 Blip으로 caption 대체
+    - COYO-7B
+      - 너무 큰/작은 image, 부적절한 aspect ratio filtering
+      - pHash value로 기존 benchmark dataset 중복 시 제거 (ImageNet, MS-COCO, etc)
+      - 명사형, 적절한 길이의 text, 영어 text만 추출
+      - 중복 띄어쓰기 수정, 10번 이상 사용된 문구 제거, 등 수행
+  - Fine-grained: GhatGPT-4V를 사용하여 instruction tuning
+    - ShareGPT4V-PT: cost-effective하게 100K data만 ChatGPT 사용, 나머지 1.2M는 pre-trained captioner로 추출
+
   
 
-- 학습: VFM, LLM은 freeze하고 learable interface만 Cross-Entropy 기반으로 학습하는게 일반적임
+- 학습
 
   ![](images/2024-06-24/image-20240624234003351.png)
 
-- 학습 전략
+  - VFM, LLM은 freeze하고 learable interface만 학습하는게 일반적임
+
+  - 아래 테이블처럼 Autoregressive하게 Cross-Entropy loss를 활용
 
   - image, text pair가 noisy 할수록, short할수록 low image resolution /  clean 할수록, longer할수록 high image resolution 으로 학습해야 hallucination이 방지됨
 
 ## 3.2 Instruction Tuning
+
+
 
 ## 3.3 Alignment Tuning
 
@@ -149,6 +173,3 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 ## 7.3 LLM aided Visual Reasoning
 
 # 8. Challenges & Future Directions
-
-
-
