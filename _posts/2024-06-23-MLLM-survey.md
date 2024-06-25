@@ -33,13 +33,13 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 - Timeline
 
-  ![](images/2024-06-24/image-20240624231726005.png)
+  ![](../images/2024-06-24/image-20240624231726005.png)
 
 # 2. Architecture
 
 - 3가지 모듈로 구성 
 
-  ![](images/2024-06-24/image-20240624231924554.png)
+  ![](../images/2024-06-24/image-20240624231924554.png)
 
   - Modality Encoder: Eyes / Ears 역할
 
@@ -53,11 +53,11 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 - Text에 align된 CLIP과 같은 pretrained encoder를 주로 활용
 
-  ![](images/2024-06-24/image-20240624232024232.png)
+  ![](../images/2024-06-24/image-20240624232024232.png)
 
 - Encoder-less 구조 (Fuyu-8B)도 있음 $\to$ MLP로 directly projection 수행
 
-  ![](images/2024-06-24/image-20240624232213240.png)
+  ![](../images/2024-06-24/image-20240624232213240.png)
 
 - Parameter size, training data composition에 비해 input resolution이 더욱 중요한 parameter임 $\to$ [52] 참고!
 
@@ -67,13 +67,13 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 - 최근 LLM은 causal attention 기반으로 구성 $\to$ Next token prediction & Decoder-only 구조이기 때문으로 사료됨
 
-  ![](images/2024-06-24/image-20240624232456162.png)
+  ![](../images/2024-06-24/image-20240624232456162.png)
 
 - Scalability가 보장된다고 함 (7B $\to$ 13B $\to$ 34B일수록 성능 향상)
 
 - MoE (Mixture of Experts) 기반의 sparse architecture가 computational cost 없이 scaling-up이 가능해서 성능 향상됨
 
-  ![](images/2024-06-24/image-20240624232804578.png)
+  ![](../images/2024-06-24/image-20240624232804578.png)
 
 ## 2.3 Modality Interface
 
@@ -108,7 +108,7 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 - 데이터: large-scale image-text paired data
 
-  ![](images/2024-06-24/image-20240624234238241.png)
+  ![](../images/2024-06-24/image-20240624234238241.png)
 
   - Coarse-grained : Web-crawled data 특성상 규모가 크고, noisy & short caption이 특징.
     - CC-3M/CC-12M
@@ -134,13 +134,14 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 - 학습
 
-  ![](images/2024-06-24/image-20240624234003351.png)
+  ![](../images/2024-06-24/image-20240624234003351.png)
 
   - VFM, LLM은 freeze하고 learable interface만 학습하는게 일반적임
 
   - 아래 테이블처럼 Autoregressive하게 Cross-Entropy loss를 활용
 
   - image, text pair가 noisy 할수록, short할수록 low image resolution /  clean 할수록, longer할수록 high image resolution 으로 학습해야 hallucination이 방지됨
+
 
 ## 3.2 Instruction Tuning
 
@@ -168,8 +169,81 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 ## 7.1 Multimodal In-Context Learning
 
+- Few shot example과 instruction만 가지고 학습을 수행하여, unseen task를 해결함
+
+- Training-free하게 진행됨
+
+  ![](../images/2024-06-24/image-20240625225757661.png)
+
+- ICL 능력을 improving하는 방법
+
+  - Instruction Tuning과 함께 사용 (MMICT-IT)
+
+    ![](../images/2024-06-24/image-20240625230250235.png)
+
+  - Video와 함께 사용 (Emu)
+
+    ![](../images/2024-06-24/image-20240625230347276.png)
+
+  - Image/Text를 unified quatized input / output으로 표현 
+
+    ![](../images/2024-06-24/image-20240625230725431.png)![](../images/2024-06-24/image-20240625230756165.png)
+
+  - LLM의 reasoning capability를 통해 Multi-image간의 relationship을 학습 (MMICL)
+
+    ![](../images/2024-06-24/image-20240625230944650.png)
+
+
+
 ## 7.2 Multimodal Chain-of-Thought
+
+- 3가지 learning paradigm이 있음
+
+  - few-shot : 예시가 되는 샘플과 답변을 instruction과 함께 제공
+
+  - zero-shot: 예시는 필요없고 아래와 같은 instrution을 제공
+
+    "“Let’s think frame by frame” or “What happened between these two keyframes"
+
+  - finetuning: M-COT learning을 위한 dataset을 curation해야함
+
+    - ex. ScienceQA dataset
+
+      ![](../images/2024-06-24/image-20240625232239477.png)
+
+- Chain Configuration
+
+  - Structure에 따라 2가지 type이 있음
+
+    - single chain
+
+    - tree shape chain
+
+      ![](../images/2024-06-24/image-20240625233301631.png)
+
+  - Length에 따라 2가지 type이 있음
+    - adaptive: LLM이 알아서 prompt 생성을 멈추게 함
+    - Fixed: 고정된 length가 생성되도록 함
+  - Pattern 생성 방식에 따라 2가지 type이 있음
+    - infilling-based: 이전 / 이후 step의 논리적 공백을 추론하도록 요구됨
+    - prediction-based: 이전 reasoning history를 condition으로 요구됨
+
+
 
 ## 7.3 LLM aided Visual Reasoning
 
+- World-knowledge 기반으로 generalizability가 좋음
+  - meme도 이해할 수 있음
+- Control & interactivity가 좋음 (NLP의 특성)
+- 2가지 학습 기법
+  - Training-free
+    - zero-shot/ few-shot learning: LLM의 언어적 reasoning 능력, in-context learning 능력을 활용함
+  - Finetuning
+    - Tool을 활용 (ex. GPT4v + Dall-E)
+
 # 8. Challenges & Future Directions
+
+- Long context에 제한이 있음 	
+  - Long-video understanding 등
+- Complex prompt를 instrucion으로 활용하는 방향
+- M-ICL / M-CoT를 활용하는 연구
