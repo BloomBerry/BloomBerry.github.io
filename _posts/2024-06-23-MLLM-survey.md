@@ -1,7 +1,6 @@
 ---
 title: "[MM] A Survey on Multimodal Large Language Models"
 ---
-
 # [MM] A Survey on Multimodal Large Language Models
 
 - paper: https://arxiv.org/pdf/2306.13549
@@ -145,9 +144,88 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
 ## 3.2 Instruction Tuning
 
+- Instruction: task에 대한 묘사 (Natural Language)
 
+- Instruction tuning: 모델에게 user가 제공한 instruction을 더욱 잘 이해하도록 학습
+
+  $\to$​​ LLM은 <u>specific task</u>에 <u>fitting</u>되도록 학습되는게 아니라 **unseen task**에 대해 **generalize**가 잘되도록 학습됨
+
+  ![](../images/2024-06-21/image-20240625141324814.png)
+
+  - Answer: ![](../images/2024-06-21/image-20240625141716841.png)
+    - $\theta$: learnable LLM parameters
+
+- Objectives: Next Token prediction (response) 을 autoregressive하게 학습
+
+  ![](../images/2024-06-21/image-20240625141747322.png)
+
+- Data Collection
+
+  - Data Adaptation: explicit하게 caption에 대한 묘사를 추가
+
+    ![](../images/2024-06-21/image-20240625143917754.png)
+
+    ex. "short", "brief" 라는 단어를 caption에 추가 
+
+    ex. "single sentence"라는 단어를 caption에 추가
+
+  - Self-Instruction
+
+    ![](../images/2024-06-21/image-20240625143829768.png)
+
+    - image를 text caption으로 변환 (ex. bounding boxes)
+    - real-world dataset (multiple round conversation)에 사용
+
+  - Data Mixture
+
+    - Multimodal data를 random shuffle해서 사용
+
+- Data Quality
+
+  성능에 더 중요한 지표: Quality > Quantity $\to$ noisy label automatic fitering이 중요
+
+  - Prompt diversity: 다양한 prompt 기반 instruction 제공하는 것이 모델 성능에 긍정적
+  - Task coverage: instruction 성능 boost에 우선순위
+    - visual reasoning > captioning, QA reasoning
+    - Instruction complexity > task diversity
 
 ## 3.3 Alignment Tuning
+
+- Human preference를 모방하도록 추가 학습함으로써 Hallucination 등을 해결
+
+  - RLHF (Reinforcement Learning with Human Feedback)
+
+    - Reward model을 추가 학습하여 활용
+
+      ![](../images/2024-06-21/image-20240625145259723.png)
+
+      1. Supervised Fine-Tuning (SFT): Human labeled caption을 가지고 *policy model*을 학습. 
+
+      2. Reward modeling: 학습된 model의 output $y_l$에 대해 Human preference (우선순위)를 매겨 preferred response $y_w$를 따르도록 reward model을 학습
+
+         ![](../images/2024-06-21/image-20240625145538227.png)
+
+         - $\theta$: reward model parameter
+         - $D=\{(x, y_l, y_w\}$​
+         - $r_{\theta}$: reward model. policy model과 유사한 structure로 설계
+
+      3. Reinforcement Learning: Proximal Policy Optimization (PPO) algorithm을 통해 reward를 최대화 하도록 학습. 2번째 term은 SFT freezed model로부터 너무 벗어나지 않도록 regularization term
+
+         ![](../images/2024-06-21/image-20240625150417244.png)
+
+         - $\phi$: RL policy model learnable parameter
+         - $\pi_{\phi}^{RL}$: RL policy model
+         - $\pi^{REF}$: SFT policy model
+
+  - Direct Preference Optimization (DPO)
+
+    - Reward model없이 학습
+
+      ![](../images/2024-06-21/image-20240625150526748.png)
+
+  - Data: model response에 대한 feedback을 수집하는 방식 (human, ChatGPT)에 따라 benchmark dataset이 구분
+
+    ![](../images/2024-06-21/image-20240625150720510.png)
 
 # 4. Evaluation
 
@@ -222,9 +300,12 @@ title: "[MM] A Survey on Multimodal Large Language Models"
       ![](../images/2024-06-24/image-20240625233301631.png)
 
   - Length에 따라 2가지 type이 있음
+
     - adaptive: LLM이 알아서 prompt 생성을 멈추게 함
     - Fixed: 고정된 length가 생성되도록 함
+
   - Pattern 생성 방식에 따라 2가지 type이 있음
+
     - infilling-based: 이전 / 이후 step의 논리적 공백을 추론하도록 요구됨
     - prediction-based: 이전 reasoning history를 condition으로 요구됨
 
