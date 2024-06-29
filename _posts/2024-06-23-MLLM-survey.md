@@ -150,20 +150,20 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
   $\to$​​ LLM은 <u>specific task</u>에 <u>fitting</u>되도록 학습되는게 아니라 **unseen task**에 대해 **generalize**가 잘되도록 학습됨
 
-  ![](../images/2024-06-21/image-20240625141324814.png)
+  ![](../images/2024-06-24/image-20240629232206151.png)
 
-  - Answer: ![](../images/2024-06-21/image-20240625141716841.png)
+  - Answer: ![](../images/2024-06-24/image-20240629232134882.png)
     - $\theta$: learnable LLM parameters
 
 - Objectives: Next Token prediction (response) 을 autoregressive하게 학습
 
-  ![](../images/2024-06-21/image-20240625141747322.png)
+  ![](../images/2024-06-24/image-20240629232151780.png)
 
 - Data Collection
 
   - Data Adaptation: explicit하게 caption에 대한 묘사를 추가
 
-    ![](../images/2024-06-21/image-20240625143917754.png)
+    ![](../images/2024-06-24/image-20240629232230863.png)
 
     ex. "short", "brief" 라는 단어를 caption에 추가 
 
@@ -171,7 +171,7 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
   - Self-Instruction
 
-    ![](../images/2024-06-21/image-20240625143829768.png)
+    ![](../images/2024-06-24/image-20240629232255685.png)
 
     - image를 text caption으로 변환 (ex. bounding boxes)
     - real-world dataset (multiple round conversation)에 사용
@@ -197,13 +197,13 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
     - Reward model을 추가 학습하여 활용
 
-      ![](../images/2024-06-21/image-20240625145259723.png)
+      ![](../images/2024-06-24/image-20240629232412257.png)
 
       1. Supervised Fine-Tuning (SFT): Human labeled caption을 가지고 *policy model*을 학습. 
 
       2. Reward modeling: 학습된 model의 output $y_l$에 대해 Human preference (우선순위)를 매겨 preferred response $y_w$를 따르도록 reward model을 학습
 
-         ![](../images/2024-06-21/image-20240625145538227.png)
+         ![](../images/2024-06-24/image-20240629232433577.png)
 
          - $\theta$: reward model parameter
          - $D=\{(x, y_l, y_w\}$​
@@ -211,7 +211,7 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
       3. Reinforcement Learning: Proximal Policy Optimization (PPO) algorithm을 통해 reward를 최대화 하도록 학습. 2번째 term은 SFT freezed model로부터 너무 벗어나지 않도록 regularization term
 
-         ![](../images/2024-06-21/image-20240625150417244.png)
+         ![](../images/2024-06-24/image-20240629232449895.png)
 
          - $\phi$: RL policy model learnable parameter
          - $\pi_{\phi}^{RL}$: RL policy model
@@ -221,11 +221,11 @@ title: "[MM] A Survey on Multimodal Large Language Models"
 
     - Reward model없이 학습
 
-      ![](../images/2024-06-21/image-20240625150526748.png)
+      ![](../images/2024-06-24/image-20240629232847331.png)
 
   - Data: model response에 대한 feedback을 수집하는 방식 (human, ChatGPT)에 따라 benchmark dataset이 구분
 
-    ![](../images/2024-06-21/image-20240625150720510.png)
+    ![](../images/2024-06-24/image-20240629232753726.png)
 
 # 4. Evaluation
 
