@@ -18,6 +18,8 @@ title: "[LG] LayoutPrompter: Awaken the Design Ability of Large Language Models"
 
 # 2. Contribution
 
+- 
+
 # 3. LayoutPrompter
 
 # 4. Experiments
