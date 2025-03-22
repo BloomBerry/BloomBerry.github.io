@@ -4,9 +4,9 @@ title: [MM] LLaVa-Mini: EFFICIENT IMAGE AND VIDEO LARGE MULTIMODAL MODELS WITH O
 ---
 # [MM] LLaVa-Mini: EFFICIENT IMAGE AND VIDEO LARGE MULTIMODAL MODELS WITH ONE VISION TOKEN
 
-- paper: 
+- paper: https://arxiv.org/abs/2501.03895
 - github: https://github.com/ictnlp/LLaVA-Mini
-- archived (인용수: 0회, '25-01-25 기준)
+- ICLR 2025 (인용수: 3회, '25-03-14 기준)
 - downstream task: VQA
 
 # 1. Motivation
