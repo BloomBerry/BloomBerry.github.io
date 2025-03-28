@@ -75,8 +75,10 @@ title: "[MM] VisionZip: Longer is Better but Not Necessary in Vision Language Mo
 
 - VisionZip 알고리즘
 
-  ![](../images/2024-12-15/image-20241215235540873.png)
+  ![](../images/2024-12-15/image-20250328124851279.png)
 
+  ![](../images/2024-12-15/image-20241215235540873.png)
+  
   - Dominant Token
     - CLS token이 있을 때
       - CLS token에 attention이 높은 상위 k개 token
