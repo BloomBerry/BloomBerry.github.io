@@ -1,0 +1,262 @@
+---
+title: "[Layout] PosterO: Structuring Layout Trees to Enable Language Models in Generalized Content-Aware Layout Generation"
+
+---
+
+
+
+# [Layout] PosterO: Structuring Layout Trees to Enable Language Models in Generalized Content-Aware Layout Generation
+
+- paper: https://arxiv.org/pdf/2505.07843
+- github: https://github.com/theKinsley/PosterO-CVPR2025
+- CVPR 2025 accepted (인용수: 0회, 250517 기준)
+- downstream task: Context-aware Layout Generation
+
+# 1. Motivation
+
+- 기존의 content-aware Layout Generation은 2가지 한계가 있었음
+
+  - **Image-centric enhancements**를 중시했음 
+    - "Saliency map"기반의 saliency map을 입력하여 layout constraint을 제공 $\to$ **학습 데이터 부족**으로 local solution space에 빠져, 낮은 퀄리티의 layout constraint를 생성함
+  - Rectangular shape만 고려했음
+
+  $\to$ LLM의 지식을 끌어낼 input으로 대체해볼까?
+
+![](../images/2025-05-17/image-20250517171341937.png)
+
+# 2. Contribution
+
+- LLM의 지식을 활용 가능하도록 **Language-based**로 layout을 새롭게 표현하는 **Layout Tree**를 제안함
+
+  ![](../images/2025-05-17/image-20250517204745737.png)
+
+  - **Hirarchical node**를 통해 "design intent"와 임의의 모양의 element를 표현
+  - **SVG language**로 표현
+
+- **Intent-aligned** layout만 생성하도록 **design intent**를 예측하는 detection 모델을 제안함
+
+  ![](../images/2025-05-17/image-20250517204812127.png)
+
+  - **RAG** (Retrieval Augmented Generation) concept
+  - **design intent**가 유사한 포스터 데이터의 레이아웃을 참고
+
+- 생성된 레이아웃을 **poster design realization**이 가능하도록 chat형식으로 **rendering**
+
+  ![](../images/2025-05-17/image-20250517204847853.png)
+
+- Content-aware Layout Generation task에서 SOTA
+
+- 새로운 metric도 추가로 제안함 
+
+  - Intent-aware content metrics $\to$ 기존의 saliency-aware metrics보다 신뢰할만함
+
+- **PStylish7**라는 poster뿐만 아니라 더 다양한 도메인 (SNS, Paint, Poem, etc) 데이터셋을 제안함
+
+  ![](../images/2025-05-17/image-20250517204916036.png)
+
+  - 152개의 few-shot / 100개의 test examples
+
+  - 7개의 목적 / 8개의 요소 타입으로 구성
+
+  - 다양한 난이도 (train / test category gap)
+
+    ![](../images/2025-05-17/image-20250517205036298.png)
+
+  - 다양한 aspect ratio
+
+    ![](../images/2025-05-17/image-20250517204941719.png)
+
+# 3. PosterO
+
+- Overall architecture
+
+  ![](../images/2025-05-17/image-20250517205242361.png)
+
+  - Layout rendering까지 3 step
+    - 퀴리 포스터에 대한 **layout tree construction** $\to$ 쿼리 포스터와 디자인 의도가 비슷한 k-shot 후보 포스터들의 layout을 사용하여  **layout tree generation** $\to$ LLM 모델 *M*과 chat을 통한 **poster design realization** 
+
+- Why language-based?
+
+  - LLM의 내재된 지식을 잘 활용하기 위해서는 language로만 layout를 표현해보자는 취지!
+  - Image, layout paired dataset이 LLM을 학습할때 사용한 (language-only) 데이터보다 턱없이 부족하기 때문이기도 함
+
+- How to represent layout in language?
+
+  - **SVG** language 기반의 **Layout Tree**로 표현
+
+    - Why **SVG** language? $\to$ **rendering**이 가능한 언어
+
+      ![](../images/2025-05-17/image-20250517205125488.png)
+
+      - SVG-language로 랜더링하여 구현함 $\to$ 미리캔버스에서도?
+
+## 3.1 Layout Tree Construction
+
+- Unverisal shape Vectorization $\to$ **SVG standard**를 차용함 [9]
+
+  ![](../images/2025-05-17/image-20250517210403439.png)
+
+  - Ellipse (타원)
+  - Rectangle (직사각형)
+  - Rotated Rectangle (마름모)
+  - Complex curve (곡선): Cubic Bezier 곡선 함수를 사용
+  - Polygon: design intent area 표시할때만 사용
+
+- **Design Intent**
+
+  - 주어진 이미지 내에서, 요소들이 배치할 수 있는 영역을 나타냄 (polygon $\to$ 다각형)
+  - U-Net 기반의 design intent detection model *S*를 준지도 학습하기 위해 MSE loss로 학습
+    - design intent bitmap을 예측 (segmentation model)
+  - U-Net의 Encoder output vector $\bold{Z}_D$는 design intent vector로, 향후 retrieval할 때 사용
+
+- **Hirarchical Node Representation**
+
+  - Image 해상도를 고려한 SVG container로 구성
+
+    ![](../images/2025-05-17/image-20250517212102820.png)
+
+  - Underlay의 영역을 기준으로 정렬
+
+  - Underlay 요소의 경우, 아래 식을 만족할 경우 subtree node에 **상대적 거리좌표**를 기준으로 표현
+
+    - 기준
+
+      ![](../images/2025-05-17/image-20250517212241451.png)
+
+    - 상대좌표 예시
+
+      $<svg \quad x=\{N_a.x\}\quad y=\{N_b.y\}>\{N_a'\}\{N_B'\}</svg>$
+
+      ![](../images/2025-05-17/image-20250517212623577.png)
+
+  - 요소별 Unitque Id 부여 $\{c_i\}$
+
+## 3.2 Layout Tree Generation
+
+- Intent-aligned Example Selection
+
+  - 기존에는 Saliency map (혹은 Query image)를 기준으로 유사한 poster를 Retrieval 하여 참고할 레이아웃을 in-context learning 예시로 LLM에 넣었음
+
+  - 본 논문은 Design Intent Model의 latent vector $\bold{Z}_D$를 기준으로 retrieval 수행
+
+  - 검색된 candidate poster의 layout은 prompt template을 통해 짧은 글 형태로 변환
+
+    ![](../images/2025-05-17/image-20250517213021790.png)
+
+## 3.3 Poster Design Realization
+
+- Text요소의 적절한 font size, color등을 LLM이 context-aware하게 추천
+
+- 3가지 프로세스
+
+  - mockup creation
+
+    - SVG language의 shape element $\to$ category format으로 변환 
+
+      ex. <rect id=...> $\to$ <image> or <text>
+
+  - material synthesis
+
+    ex. slogans(text context), image의 hyperlink
+
+# 4. Experiments
+
+- Dataset
+
+  - PKU / Posterlayout / PStylish7
+
+- Evaluation metrics
+
+  - Graphic metrics
+
+    - overlay ($\downarrow$): overlay 요소간의 겹치는 정도
+    - alignment ($\downarrow$): 요소간의 정렬이 틀어진 정도
+    - underlay ($\uparrow$): underlay 요소가 overlay 요소와 겹침 정도
+
+  - Content metrics
+
+    - non-salient space utilization ($\uparrow$): 비 saliency region에 레이아웃이 배치된 정도
+
+    - salient space occlusion ($\downarrow$): salient space 내 레이아웃이 배치된 정도
+
+    - readability ($\downarrow$): text 요소가 배치된 이미지의 gradient
+
+    - (추가) design intent coverage ($\uparrow$): utilization과 유사
+
+    - (추가) conflict ($\downarrow$): occlusion과 유사
+
+      $\to$ 새로운 metric사용 시, 실제 layout data에서
+
+      ![](../images/2025-05-17/image-20250517214154479.png)
+
+      - unmatched data 34% 감소
+
+      - 계산 비용 1.3%만 사용함
+
+        ![](../images/2025-05-17/image-20250517214130365.png)
+
+- Models
+
+  - Design Intent Model
+    - Dataset별로 학습 (PKU, CGL)
+      - MiT-B1 semantic segmentation
+      - 1e-6 learning rate
+      - MSE loss
+  - LLMs
+    - Llama 2-7B (L2)
+    - CodeLlama-7B (CL)
+    - Llama 3.1-8B (L3)
+  - Retrieve Module
+    - k=5,10
+
+- 정량적 결과
+
+  - CGL
+
+    ![](../images/2025-05-17/image-20250517214400301.png) 
+
+  - PKU
+
+    ![](../images/2025-05-17/image-20250517214523213.png)
+
+  - PStylish7
+
+    ![](../images/2025-05-17/image-20250517214440816.png)
+
+- 정성적 결과
+
+  - CGL
+
+    ![](../images/2025-05-17/image-20250517214414956.png)
+
+  - PKU
+
+    ![](../images/2025-05-17/image-20250517214534331.png)
+
+  - PStylish7
+
+    ![](../images/2025-05-17/image-20250517214452232.png)
+
+- Ablation Studies
+
+  - Layout tree construction 방법에 따른 실험
+
+    ![](../images/2025-05-17/image-20250517214618864.png)
+
+    - *d*만 있는 경우, Content metrics가 좋아지는 것은 **빈 underlay**때문임
+
+      ![](../images/2025-05-17/image-20250517214709943.png)
+
+  - In-Context example selection 방법에 따른 비교
+
+    ![](../images/2025-05-17/image-20250517214803793.png)
+
+  - Cutomized design intent에 따른 실험
+
+    ![](../images/2025-05-17/image-20250517214832475.png)
+
+  - Small LLM에 따른 성능
+
+    ![](../images/2025-05-17/image-20250517214849616.png)
+
+    
