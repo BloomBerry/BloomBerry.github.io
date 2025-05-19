@@ -1,3 +1,9 @@
+---
+title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automation with Large Foundation Models"
+---
+
+
+
 # [WebAgent] A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automation with Large Foundation Models
 
 - paper: https://arxiv.org/pdf/2503.23350
@@ -85,6 +91,8 @@
 
 ## 3.1 Perception
 
+![](../images/2025-05-12/image-20250519085434371.png)
+
 - User prompt에 따라 인식해야하는게 달라짐
 
   ex. User prompt *T*="Youtube를 열고, 비디오를 켜줘" $\to$ web browser의 address bar를 인지하고, *www.youtube.com*을 입력해서 비디오를 play해야함.
@@ -168,11 +176,11 @@
 
 ### 3.2.3 Memory Utilization
 
-- Short-term Memory
+- Short-Term Memory
 
   - previous actions $\to$ 반복적인 operation을 방지하여 task completion efficiency를 보증함
 
-- Long-term Memory
+- Long-Term Memory
 
   - 이전 step에서 수행한 execution tasks의 action trajectories
 
@@ -232,25 +240,121 @@
 
 ## 4.1 Data
 
+- 두가지 과정
+  - Data Pre-processing
+    - data 구조화 $\to$ Usability & Quality 향상
+  - Data Augmentation
+    - Quantity & Diversity 향상
+
+### 4.1.1 Data Pre-processing
+
+- Modality Alignment
+
+  - Multi-modal web data간의 정렬 (text + image)
+
+    ex. UIX [90] 논문에서는 screenshots + augmented accessibility tree를 활용
+
+    ex. UGrounds [36] 논문에서는 <screenshot, referring expression, coordinate> triplet으로 구축. referring expression은 HTML로부터 추출
+
+    ex. LVG [109] 논문은 UI screenshot + free-form language expression pair를 사용
+
+- Format Alignment
+
+  - Platform-specific discrepancies를 다룸 (ex. naming conflicts,action tap, etc)
+
+    ex. OS-Atlas [158] 논은 cross-platform 데이터셋 간에 action space를 align하게 함
+
+### 4.1.2 Data Augmentation
+
+- Data Collection
+
+  - Public dataset 혹은 real-world dataset로부터 데이터를 수집
+
+    ex. Lexi [7] 논문에서는 114K UI image + caption을 curate.
+
+    ex. ShowUI [85] 논문에서는 public dataset에서 고품질/대표할 데이터를 조심스럽게 sampling
+
+  - Human expert label의 고비용을 해결하고자 cost-effective dataset을 VLM을 이용하여 구축
+
+    ex. Falcon [120] 논문에서는 publicly available webpages로부터 multi-step cross-platform screenshot을 OCR annotation을 통해 생성한 Insight-UI 데이터셋을 제안
+
+    ex. ScribeAgent [121] 논문에서는 다양한 website에서 실제 Scribe 사이트 사용자의 action sequence data를 통해 구축
+
+    ex. UINav [80]에서는 UI element의 secondary attribute를 randomize하여 학습 데이터 증강을 수행
+
+- Data Synthesis
+
+  - 고품질 QA (Question-Answering) data를 생성하여 학습용으로 활용. 특히 sequential interaction을 캡쳐한 데이터
+
+    ex. AgentTrek [162] 논문에서는 web tutorial을 step-by-step instruction을 시뮬레이션하여 execution trajectory를 생성
+
 ## 4.2 Training Strategies
 
-# 5. Trustworthy Webagents
+- 학습 전략은 4가지로 구분됨
+  - Training-free
+  - GUI Comprehension Training
+  - Task-specific Fine-tuning
+  - Post-Training
 
-## 5.1 Safety & Robustness
+### 4.2.1 Training-free
 
-## 5.2 Privacy
+- AutoGUI [180] 논문에서는 action history와 future action plans를 chain-format prompt기반 synthesize
+- CoAT [172] 논문에서는 더욱 효과적인 navigation 능력을 위해 action과 thought을 통합함. (ex. screen description, 이전 action과 그 결과로 next action을 reasoning, 이어지는 step을 묘사하도록 함)
 
-## 5.3 Generalizability
+### 4.2.2 GUI Comprehension Training
+
+- Training-free방식의 LFM은 screen understanding, OCR이 떨어짐
+
+  ex. decorative icon이나 background text에 집중하고, key item을 외면할수 있음
+
+- OS-ATLAS [158] 논문에서는 <screenshot, referring expression, coordinates> triplet으로 학습 $\to$ vision centric GUI understanding
+
+- MM1.5 [171] 논문에서는 text-rich OCR을 기반으로 image, text interleaved data를 활용하여 학습 $\to$ E-commerce에 특화
+
+- LVG [109] 논무에서는 layout-guided contrastive learning으로 학습하여 UI 요소 개개인의 semantic을 학습
+
+- Spotlight [75] 논문에서는 Region Summarizer를 도입하여 핵심 region을 screenshot에서 추출
+
+- ScreenAI [5] 논무에서는 visual 요소를 연관된 HTML과 mapping하는 Pix2Struct [73]의  patching strategy를 활용
+
+### 4.2.3 Task-specific Fine-tuning
+
+- User task를 기반으로 next step을 정확하게 reasoning하고 generating하는건 매우 어려움
+  - HTML-T5 [42] 논문에서는 scripted planning dataset으로 finetuning한 LLM-driven agent를 제안함. 자연어 instruction을 제어 가능한 sub-instructions로 분할하고, HTML document를 task-relevant snippet로 요약.
+  - LCoW [72] 논문에서는 Contextualization module을 통해 contextualized 관찰을 수행하여 decision-making 능력을 향상. 해당 모듈은 자신의 output중 optimized output을 통해 iteratively finetuned되어 학습됨.
+  - NNetNav [101] 논문에서는 language instruction을 계층적으로 구성하여 finetuning하여 검색 과정을 통제가능하도록 구현. 
+  - WebGUM [32] 논문에서는 web navigation task를 instruction following task로 변환하여 data-driven offline supervised finetuning 패러다임을 열었음
+  - LLMPA [39] 논문에서는 e2e finetuning framework를 구현하여 instruction 분해, action 예측을 수행함. 예측한 action을 꼼꼼하게 Controllable Calibration을 수행함
+
+### 4.2.4 Post-training
+
+- Web의 인터페이스가 지속적으로 변하고, user의 요구사항도 변화함에 따라 배포후 realtime adaptation은 필수적임
+  - AutoGLM [91] 논문에서는 progressive reinforcement learning framework를 통해 지속적으로 self-evolving learning 패러다임을 제시
+  - AutoWebGLM [71] 논문에서는 multi-stage training 전략으로 planning, reasoning, interacting 능력을 향상시킴.
+  - RUIG [179] 논문에서는 visually semantic metric을 기반으로 token sequence를 guide받아 reinforcement learning을 수행함.
 
 # 6. Future Directions
 
 ## 6.1 Trustworth Webagents
 
+- Fairness: 편향없이 perception, reasoning, execution을 수행해야함
+
+  ex. 간호사에 대한 성적 편향성
+
+- Explainability: action에 대해 정당화 할수 있어야 함
+
 ## 6.2 Datasets and Benchmarks of WebAgents
+
+- PersonalWAB [10]은 1,000개의 다양한 user-profile과 40,000개의 web behavior기반 real world data로 구성
+- Webcanvas [107] framework는 realistic web-based interactions를 모방하여 어떻게 agent가 dynamic, unpredictable setting에서 작동하는지 연구원들에게 관찰할 놀이터를 제공함 
+- 향후에는 fluncating internet speed, adapting to varied web layout등 realworld 이슈를 고려해야함
 
 ## 6.3 Personalized WebAgents
 
-## 6.4 Domain-specific WebAgents
+- Generalized LLM을 personalized finetuning하기란 어려움 $\to$ RAG system으로 구현
+- 즉각적인 contextual cue에 적응하는 realtime prompt를 short-term memory로 구현
+
+
 
 
 
