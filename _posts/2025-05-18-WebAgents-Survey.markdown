@@ -111,7 +111,7 @@ title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automat
     - finetuned Small LM + LLM $\to$ 효율적으로 large HTML document를 처리함
   - HTML-T5
     - self-experience로부터 학습하는 LLM-driven agent
-    - tas-relevant snippets로 HTML document를 요약하여 environemtn information 추출 $\to$ user instruction을 subtask로 쪼개어 효울적으로 planning
+    - task-relevant snippets로 HTML document를 요약하여 environemtn information 추출 $\to$ user instruction을 subtask로 쪼개어 효울적으로 planning
 
 ### 3.1.2 Screenshot-based Webagents
 
