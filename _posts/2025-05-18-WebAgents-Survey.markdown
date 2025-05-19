@@ -160,7 +160,7 @@ title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automat
 
   - 추가적인 operation을 하지 않고, 단순하게 input instruction에 대한 반응 (next action)을 예측
 
-    ex. ASH는 full webpage를 요약하는 SUMMARIZER prompt를 처음으로 도입하여 action-aware observation을 수행. Action reasoning phase에서는 해당 관측값을 ㅗ대로 ACTOR prompt을 사용하여 next action 예측
+    ex. ASH는 full webpage를 요약하는 SUMMARIZER prompt를 처음으로 도입하여 action-aware observation을 수행. Action reasoning phase에서는 해당 관측값을 토대로 ACTOR prompt을 사용하여 next action 예측
 
 - Strategic Reasoning
 
@@ -204,7 +204,7 @@ title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automat
 
   - screenshot을 보고 후보 요소들의 coordinate를 직접 생성
 
-  - HTML에서 interaction godigkf 디드둣fmf tjsxor
+  - HTML에서 interaction 해야할 element를 선택
 
     ex. ShowUI는 action (ex. [CLICK])를 생성하고, 해당 좌표값을 직접 생성함
 
@@ -214,7 +214,7 @@ title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automat
 
   - extra auxiliary module를 통해 target lement의 위치값을 반환하도록 함
 
-    ex. Ponder & Press는 MLLM을 통해 high-level user instructiondmf detailed action description으로 묘사하게 하고, 해당 description을 토대로 Screenshot 내의 target GUI element를 정확하게 선택함
+    ex. Ponder & Press는 MLLM을 통해 high-level user instruction을 detailed action description으로 묘사하게 하고, 해당 description을 토대로 Screenshot 내의 target GUI element를 정확하게 선택함
 
     ex. OSCAR는 visual & semantic grounding을 수행함. Visual grounding은 accessibility tree에 있는 bbox를 Set-of-Mark prompt로 추출함. Semantic grounding은 descriptive label로 key elements를 annotation함.
 
@@ -315,7 +315,7 @@ title: "A Survey of WebAgents: Towards Next-Generation AI Agents for Web Automat
 
 - Spotlight [75] 논문에서는 Region Summarizer를 도입하여 핵심 region을 screenshot에서 추출
 
-- ScreenAI [5] 논무에서는 visual 요소를 연관된 HTML과 mapping하는 Pix2Struct [73]의  patching strategy를 활용
+- ScreenAI [5] 논문에서는 visual 요소를 연관된 HTML과 mapping하는 Pix2Struct [73]의  patching strategy를 활용
 
 ### 4.2.3 Task-specific Fine-tuning
 
