@@ -1,5 +1,6 @@
 ---
 title: "UIShift: Enhancing VLM-based GUI Agents through Self-supervised Reinforcement Learning"
+
 ---
 
 
@@ -87,9 +88,25 @@ title: "UIShift: Enhancing VLM-based GUI Agents through Self-supervised Reinforc
 
 - Overall Diagram
 
-  ![](../images/2025-05-24/image-20250524211024268.png)
+  ![](../../../../../../images/2025-05-24/image-20250524211024268.png)
 
 ## 4.1 Preliminary: GRPO
+
+- GRPO는 action-critic기반의 RL framework인 Proximal Policy Optimization (PPO)보다 비용효율이 우수한 대안 RL framework임
+
+  - PPO: value-function을 별도의 critic model이 예측
+  - GRPO: 직접적으로 reward signal을 group-wise advantages $A_i$ reward 모델이 예측함 (rule-based)
+    - format: 포맷이 문제가 없는가? (with reasoning: <think>...</think> + <answer>...</answer> / wo reasoning: <answer>...</answer>)
+    - accuracy: 정답 action과, action의 parameter와 정확히 일치하는가? (ex. scroll + direction "up")
+
+- 수식
+
+  ![](../images/2025-05-24/image-20250524212902576-8089930.png)
+
+  ![](../images/2025-05-24/image-20250524212918700-8089930.png)
+
+  - $J_{GRPO}$: 목적함수로, **최대화**하는게 목표
+  - $A_i$: G개의 후보중 i번째 sampling된 output ($o_i$)이 예측한 상대적 reward (advantage)
 
 ## 4.2 Reward Design in UIShift
 
