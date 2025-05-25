@@ -88,7 +88,7 @@ title: "UIShift: Enhancing VLM-based GUI Agents through Self-supervised Reinforc
 
 - Overall Diagram
 
-  ![](../../../../../../images/2025-05-24/image-20250524211024268.png)
+  ![](../images/2025-05-24/image-20250524211024268.png)
 
 ## 4.1 Preliminary: GRPO
 
@@ -101,15 +101,149 @@ title: "UIShift: Enhancing VLM-based GUI Agents through Self-supervised Reinforc
 
 - 수식
 
-  ![](../images/2025-05-24/image-20250524212902576-8089930.png)
+  ![](../images/2025-05-24/image-20250524212902576.png)
 
-  ![](../images/2025-05-24/image-20250524212918700-8089930.png)
+  ![](../images/2025-05-24/image-20250524212918700.png)
 
   - $J_{GRPO}$: 목적함수로, **최대화**하는게 목표
   - $A_i$: G개의 후보중 i번째 sampling된 output ($o_i$)이 예측한 상대적 reward (advantage)
 
 ## 4.2 Reward Design in UIShift
 
+- Reward
+
+  ![](../images/2025-05-24/image-20250525013018834.png)
+
+### 4.2.1 Format Reward
+
+- DeepSeek-R1에서 영감을 받음
+  - Reasoning based
+    - 중간 reasoning은 <think>...</think> 안에 있고, 최종 answer는 <answer>...</answer>안에 있으면 $R_f=1$, 아니면 $R_f=0$
+  - Reasoning free
+    - 최종 answer가 <answer>...</answer>안에 있으면 $R_f=1$, 아니면 $R_f=0$
+
+### 4.2.2 Accuracy Reward
+
+- 5개의 action types별로 **structured JSON** object로 출력되도록 학습 & 추론시 response format을 통일함
+  - `click`: `(x,y)` target element UI의 중간 좌표
+    - 해당 element bbox 내로 예측하면 $R_a=1$, 아니면 $R_a=0$
+  - `scroll`: (up, down, left, right) 방향
+    - exact match하면 $R_a=1$, 아니면 $R_a=0$
+  - `open_app, input_text`: string for app name or text to be entered
+    - exact match하면 $R_a=1$, 아니면 $R_a=0$
+  - `navigate_back`: no parameter
+    - exact match하면 $R_a=1$, 아니면 $R_a=0$
+
 ## 4.3 K-step UI Transition Task & Training
 
+- K-step UI Transition Task
+
+  - input
+    - $S_t$: current step (t)의 상태 (screenshot image)
+    - $S_{t+k}$: k step 이후 (t+k)의 상태 (screenshot image)
+  - output
+    - action sequence (k개)
+
+- 효과
+
+  - robotics에서 inverse-dynamics처럼 제어 신호를 예측하는 능력을 길러줌
+
+  - 구체적으로, 주어진 환경간에 "무엇이 변했는지"랑 "어떻게 변했는지"에 집중하게 함으로써 GUI context와 actionable region에 집중함으로써 action sequence와 mapping 능력을 향상시킴
+
+  - m개의 후보 액션에 대해 reward signal을 계산하여 format / accuracy reward기반 GRPO로 학습을 수행함
+
+    $\to$ one-shot 라벨보다 그럴듯한 액션에 대한 순위를 메겨 학습함으로써 풍부한 피드백을 제공. 이는 CE Loss처럼 Exact Match하는 능력에 비해 자연스럽게 탐색하는 능력을 키워주기에, GUI task에 더 적합함 (레이아웃 생성도 좋을듯)
+
 # 5. Experiments
+
+## 5.1 Experiment Setup
+
+- Tasks
+
+  - instruction mapping
+  - GUI grounding
+
+- Training
+
+  - Framework = VLM-R1
+
+  - full-parameter training reinforcement fine-tuning
+
+  - GPU
+
+    - A800 x 8 GPUs
+
+  - Hyperparameter
+
+    ![](../images/2025-05-24/image-20250525104404959.png)
+
+    - 8 epoch (26 hours using 2K UI Transition samples)
+
+  - Models
+
+    - Qwn2.5-VL-3B/7B
+
+  - Training Datasets
+
+    - AndroidControl: UI Trajectories를 포함함 (screenshots + instructions)
+      - 학습 데이터의 다양성을 위해 다른 episode로부터 데이터를 추출
+
+  - Evaluation Datasets
+
+    - GUI grounding
+      - ScreenSpot, ScreenSpot-V2: mobile, web, desktop platform
+      - ScreenSpot-Pro: high-resolution desktop에서 추출한 fine-grained UI components
+    - GUI task automation
+      - screenshot & instruction을 제공하며 next action을 요구하는 데이터셋으로 구성
+        - AndroidControl-Low
+        - AndroidControl-High
+
+  - Evaluation Metrics
+
+    - action type accuracy(Type) : 5가지 중 action의 type에 대한 정확성
+    - grounding accuracy(Grounding): `click` action일 경우, 예측한 좌표 `(x,y)`가 target element bbox에 놓여있는지 체크
+    - successrate (SR): action type + 연관 parameters가 exact match한 비율
+
+  
+
+  ## 5.2 정량적 결과
+
+  - AndroidControl
+
+    ![](../images/2025-05-24/image-20250525105419715.png)
+
+  - GUI Grounding
+
+    ![](../images/2025-05-24/image-20250525105601999.png)![](../images/2025-05-24/image-20250525130042722.png)
+
+  
+
+## 5.3 Ablation Studies
+
+- Reasoning 유무에 따른 성능 비교
+
+  ![](../images/2025-05-24/image-20250525130230722.png)
+
+  - 학습/추론 모두 Reasoning 없이 학습하는게 성능에 도움
+
+- SFT-only vs. GRPO-only
+
+  ![](../images/2025-05-24/image-20250525130434142.png)![](../images/2025-05-24/image-20250525130515213.png)
+
+  - GRPO가 SFT보다 동등이상 성능
+  - SFT는 In-domain에서는 좋은 성능을 내지만, Out-domain은 성능이 열악함
+  - GRPO는 general 성능이 좋아짐 $\to$ UITransition이 screenshot과 text간의 정렬이 되도록 학습되기 떄문
+
+- k값에 따른 성능 분석 (Table 1)
+
+  ![](../images/2025-05-24/image-20250525105419715.png)
+
+  - k=4일때 제일 좋은 성능을 냄. 하지만,  Screenspot-pro benchmark에서는 k=1보다 열악 	
+
+  ![](../images/2025-05-24/image-20250525131151188.png)
+
+  - k=1일때 grounding benchmark에서 제일 좋음
+
+## 5.4 Future Works
+
+- 정적인 benchmark (AndroidControl)을 사용했으나, 동적인 환경을 고려한 benchmark(AndroidWorld) 사용할 예정
