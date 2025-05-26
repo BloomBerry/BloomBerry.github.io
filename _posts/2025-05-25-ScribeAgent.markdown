@@ -183,10 +183,49 @@ title: "ScribeAgent: Towards Specialized Web Agents Using Production-Scale Workf
     - Element accuracy: target HTML element가 잘 선택되었가?
     - action F1 score: text 입력 등의 작업이 잘 수행되었는가?
     - success rate: target element + operation모두 잘 수행되었는가?
+  
   - Baselines
     - Multi-stage, multi-choice QA agents (MindAct family)
       - 전체 DOM에서 pretrained element-ranking model이 50개의 후보요소를 선택
       - 별도의 LLM이 반복적으로 1개의 action이 선택될때 까지 5개의 action중 1개를 선택하고, multi-choice QA를 수행.
     - Single-stage, generation-based agent (Flan-T5$_B$)
       - 직접 operation + target을 생성
+  
+  - 정량적 결과
+  
+    - Multi-stage
+  
+      ![](../images/2025-05-25/image-20250526220505772.png)
 
+- WebArena
+
+  - Mind2Act같은 static, text-based benchmark는 1개의 목적 달성을 위해 오직 1개의 action trajectory만 맞다고 함. 
+
+  - 하지만, 같은 목적을 다른 action trajectory로 달성할 수 있음
+
+    ex. "book a flight" : `enter destination` $\to$ `enter departure `date` or vice versa.
+
+    $\to$ dynamic benchmark인 WebArena가 필요
+
+  - E-commerce (OneStopShop), social platform (Reddit), software development (GitLab), content management (CMS), online map (OneStreetMap)기으로 agent가 환경과 interaction을 수행하게 해줌
+
+  - ScribeAgent는 HTML-DOM으로 학습되어있어, WebArena의 accessibility tree형태와 다른 format으로 출력함. 
+
+    - 이를 reformatting해주기 위해 Chatgpt-4o를 사용
+
+  - 결과
+
+    ![](../images/2025-05-25/image-20250526225720894.png)
+
+- Ablation Study
+
+  - WebArena에서 GPT-4o / ScribeAgent 유무에 따른 성능 변화
+
+    ![](../images/2025-05-25/image-20250526225754398.png)
+
+  - LLM backbone & Traning token 에 따른 Proprietary dataset 평가 결과 
+
+    ![](../images/2025-05-25/image-20250526225846068.png)
+
+    - Qwen2 > Mistral
+    - Training token 많을수록 좋아짐
