@@ -74,10 +74,119 @@ title: "ScribeAgent: Towards Specialized Web Agents Using Production-Scale Workf
 
 ### 3.2.2 Preprocessing
 
-### 3.2.3 Finetuning with LoRA
+- HTML-DOM은 page에 DropDown해야 보이는 요소에 대한 구조적 & 내용적 정보를 모두 포함하고 있어, ScreenShot에 비해 액션 예측에 더 풍부한 정보를 제공 가능함
 
-### 3.2.4 Exploring the Design Space
+- 하지만, HTML-DOM은 불필요한 정보가 많음 $\to$ 전처리하여 filtering된 정보를 LLM 입력으로 제공하자!
 
-###  
+- 전처리
+
+  - BeautifulSoup library 사용
+
+    - input 
+
+      ![](../images/2025-05-25/image-20250526153636060.png)
+
+    - output
+
+      ![](../images/2025-05-25/image-20250526153645162.png)
+
+  - White-list tag attribute를 정의해서, 해당 attribute 만 남기고 나머지는 제거
+
+    ex. whitelist 
+
+    ​	tag = [`botton, a, div, body, html`] / attribute = [`class, id, node`]
+
+    - input![](../images/2025-05-25/image-20250526153951780.png)
+    - output![](../images/2025-05-25/image-20250526154005386.png)
+
+  - Character-to-token-ratio기반 random string 제거 
+
+    $$\frac{len(s)}{len(tokenizer(s))}<2$$
+
+  - comments & whitespace 여백 제거
+
+  - 잔존하는 element에 대해 고유 ID 부여
+
+    - Previous Action 예시
+
+      ![](../images/2025-05-25/image-20250526163152466.png)
+
+      - 1.: 번째 step
+      - Description: previous action의 목적에 대한 설명. 
+      - Node: 고유  ID
+      - Target: action이 적용될 target HTML item
+
+- action에 대한 description이 정보가 부족할 경우, Chatgpt로 action description을 생성
+
+  - `click here` $\to$ `Click the submit button`
+
+- 최종 형태: previous action + user query + HTML-DOM, URL을 제공
+
+  ![](../images/2025-05-25/image-20250526163352414.png)
+
+### 3.2.3 Exploring the Design Space
+
+-  Pretrained LLM
+
+  - Llama 3.1-8B
+
+  - Mistral 7B / Mistral 8x7B
+
+  - Qwen2 7B / Qwen2 57B 
+
+  - Qwen2.5 14B / Qwen2.5 32B
+
+  - Codestral 22B
+
+    $\to$ 대부분 context length가 32K라 html을 chunking해서 입력. 따라서, chunk를 잘 선택했는가에 따라 성능이 좌우되므로, end-to-end **Exact Match**와, chunk가 선택되었을 때, Exact Match를 평가하는 **Calibrated Exact Match**를 제안
+
+    ​	$\to$ Calibrated Exact Match라는 지표는, 정답이 존재하는 Chunk를 뽑는 가능성을 배제한 EM이라고 보면 됨
+
+- Context Length
+
+  - 32K $\to$ 65K로 늘렸을때 성능
+
+    ![](../images/2025-05-25/image-20250526183949709.png)
+
+    - EM이 증가한 이유: 전체 평가셋 중에, context length가 길어짐으로써 기존에 truncated되어 잘려져 나가, 정답을 못보아 틀린 경우가 사라지면서 성능 향상
+    - CEM이 감소한 이유: 정답이 존재하는 chunk 자체의 길이가 길어져, LLM의 rotary position embedding이 길어지고, target HTML element를 뽑는 난이도가 어려워짐
+
+- Data Size
+
+  ![](../images/2025-05-25/image-20250526184307779.png)
+
+  - 다다익선.
 
 # 4. Experiments
+
+- Proprietary Dataset 정량적 결과 (1,200 samples)
+
+  ![](../images/2025-05-25/image-20250526185838856.png)
+
+  - 데이터 유형별 상세 결과
+
+    ![](../images/2025-05-25/image-20250526185946308.png)
+
+- Proprietary Dataset vs. gpt-o1 (500 samples)
+
+  ![](../images/2025-05-25/image-20250526190311222.png)
+
+  $\to$ finetuning이 효율적임을 시사.
+
+- Mind2Web
+
+  - human demonstration workflow를 기반으로한 데이터셋
+
+    ex. AirBnB에서 예약.
+
+  - Evaluation Metric
+    - Element accuracy: target HTML element가 잘 선택되었가?
+    - action F1 score: text 입력 등의 작업이 잘 수행되었는가?
+    - success rate: target element + operation모두 잘 수행되었는가?
+  - Baselines
+    - Multi-stage, multi-choice QA agents (MindAct family)
+      - 전체 DOM에서 pretrained element-ranking model이 50개의 후보요소를 선택
+      - 별도의 LLM이 반복적으로 1개의 action이 선택될때 까지 5개의 action중 1개를 선택하고, multi-choice QA를 수행.
+    - Single-stage, generation-based agent (Flan-T5$_B$)
+      - 직접 operation + target을 생성
+
