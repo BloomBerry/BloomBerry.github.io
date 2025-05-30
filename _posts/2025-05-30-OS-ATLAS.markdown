@@ -237,7 +237,3 @@ title: "OS-ATLAS: A Foundation Action Model for Generalist GUI Agents"
   - 위에 report는 OOD 특성을 분석하기 위해 3개의 dataset으로만 학습함. 이를 7개로 확장해봄 (OS-Atlas-Pro)
 
     ![](../images/2025-05-30/image-20250530132344513.png)
-
-## 5.3 Application: Grounding mode
-
-## 5.4 OS-ATLAS-PRO
