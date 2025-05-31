@@ -1,0 +1,84 @@
+---
+title: "RLRF: Rendering-Aware Reinforcement Learning for Vector Graphics Generation"
+---
+
+
+
+# [SVG-GEN] RLRF: Rendering-Aware Reinforcement Learning for Vector Graphics Generation
+
+- paper: https://arxiv.org/pdf/2505.20793
+- github: X
+- archived (인용수: 0회, 25-05-31 기준)
+- downstream task: SVG code generation
+
+# 1. Motivation
+
+- 최근 VLM의 성능 향상으로, perceptual input으로부터 structured visual code를 생성하는 연구가 많이 진행되고 있다.
+
+  - StarVector는 Clip-V와 LLM을 통해 SVG generation을 code synthesis 문제로 정의하여 푼다.
+
+- 하지만, 해당 연구들의 결과는 OOD (out-of-distribution)에 취약하고, consistency issue에 봉착한다.
+
+- 이는 VLM의 autoregressive한 특성으로부터 기인한다. 즉, token별 discrete sampling을 수행하기 때문에, **SVG rendering process**는 **non-differentiable**함으로 인해 rendering된 이미지에 대해 visual feedback을 받지 못한다.
+
+  $\to$ visual feedback을 학습중에 받을수 있는 새로운 방법을 제안해보자!
+
+# 2. Contribution
+
+- Rendering SVG roll-out을 Reward signal로 삼는 새로운 RLRF (Reinforcement Learning with Rendering Feedback)을 제안함
+
+  - SVG Generation with RL을 *inverse rendering code generation task*로 재정의
+
+  ![](../images/2025-05-31/image-20250531230906161.png)
+
+- 새로운 Set or Reward를 제안함
+
+  - Pixel-level similarity
+  - Semantic alignment
+  - code efficiency
+
+- SVG Generalization task에서 SOTA
+
+# 3. Related Works
+
+## 3.1 SVG Generation
+
+크게 3가지 카테고리로 분류된다.
+
+1. 고전 기법
+   - 윤곽을 따서 이미지 내 영역을 clustering하여 효과적으로 shape을 추출, 해당 영역에 대한 code를 생성함. $\to$ 구조적이지 않고, 장환한 코드 생성 야기함
+2. Latent Variable Models
+   - 더 나은 interpolation 성능 및 transfer 성능을 보이지만, SVG subset의 제약으로 가독성이 떨어지는 code를 생성함
+3. LLM
+   - SVG generation을 renderable한 code generation task로 재정의함. 하지만 해당 연구는 rendering 과정이 non-differential하기 때문에 visual output의 validity를 반영하지 못함으로, 불충분하고 부정확한 SVG code 생성함.
+
+## 3.2 Vision-Language Models (VLMs)
+
+- Vision / Langauge 각각의 모듈의 엄청난 발전으로, 입력된 visual input로부터 SVG 뿐 아니라 TikZ, CAD code를 생성하는 *inverse rendering* 연구가 활발히 진행되고 있다.
+- 하지만 hallunication 문제 등 일반화 성능이 떨어지는데 이는 rendering 결과에 대한 visual feedback이 없기 때문이다.
+
+## 3.3 Reinforcement Learning Post-Training
+
+- 대부분의 RL to code generation이 code의 execution correctness에 초점을 맞추고 있을 뿐, visual / structural feedback은 못하고 있다.
+
+# 4. RLRF: Reinforcement Learning with Rendering Feedback
+
+## 4.1 Two-stage Training
+
+- SVG-SFT: Img2SVG code generation
+- RLRF: code2Img
+
+1. SVG-SFT
+
+   - Loss
+
+     ![](../images/2025-05-31/image-20250531234935252.png)
+
+     - $x_c$: conditial input. 여기서는 image 혹은 text가 될 수 있다.
+     - $x_s$: ground truth SVG tokens
+
+2. RLRF
+
+## 4.2 Rewards for Vector Graphics Rendering
+
+# 5. Experiments 
