@@ -31,6 +31,8 @@ title: "RLRF: Rendering-Aware Reinforcement Learning for Vector Graphics Generat
 
   ![](../images/2025-05-31/image-20250531230906161.png)
 
+  ![](../images/2025-05-31/image-20250601130226642.png)
+
 - 새로운 Set or Reward를 제안함
 
   - Pixel-level similarity
@@ -79,6 +81,258 @@ title: "RLRF: Rendering-Aware Reinforcement Learning for Vector Graphics Generat
 
 2. RLRF
 
+   - 일반적인 RL Loss
+
+     ![](../images/2025-05-31/image-20250601000819344.png)
+
+     - *R*: Reward. GRPO (Grou Relative Policy Optimization)을 적용
+     - *o*: $p_{\theta}( | x_c)$ RL로 학습된 모델의 출력값
+     - $p_{\theta}$: RL로 학습된 모델
+     - $p_{\theta_{sft}}$: sft로 학습된 모델. 고정값.
+
+   - GRPO Loss
+
+     ![](../images/2025-05-31/image-20250601001305242.png)
+
+     ![](../images/2025-05-31/image-20250601001318281.png)
+
 ## 4.2 Rewards for Vector Graphics Rendering
 
+- 장점: 완전 자동, 고퀄리티의 reward signal을 human annotation 없이 생성
+- 평가항목
+  - image reconstruction accuracy
+  - semantic alignment
+  - code efficiency
+- Rendering module: CairoSVG
+
+### 4.2.1 Image Reconstruction Rewards
+
+- Pixel-level reconstruction Loss: -1~1로 정규화된 Pixel level image기반 L2 loss
+
+  ![](../images/2025-05-31/image-20250601101923372.png)
+
+  - $I_{in}^{norm}$: input Image. zero-mean, one-std로 정규화
+  - $I_{pred}^{norm}$: 생ㅇ성된 SVG code로부터 rendering된 Image. zero-mean, one-std로 정규화
+
+- *L2 Canny* Loss: -1~1로 정규화된 Canny Edge Detector + Dilation (3x3 kernel, 1 iteration) + Gaussian Blur (size 13)로 추출한 이미지기반 L2 loss
+
+  - 목적: 윤곽을 더 잘 추출하여 structural alignment를 잘 수행하기 위함
+
+### 4.2.2 Semantic Alignment
+
+- Img2SVG
+
+  - Dreamsim을 이용하여 이미지간의 유사도를 계산함
+
+  - 추가로, Shape-focused feedback을 위해 Canny Edge detector 통과후 DreamSim 유사도 계산함
+
+    $\to$ CLIP의 학습 데이터에 SVG image가 없기에, 해당 signal은 유의미하지 못함
+
+- Text2SVG
+
+  - CLIP 모델의 textual embedding, Visual embedding간의 유사도를 계산함
+
+  - VLM-as-a-judge를 활용함
+
+    $\to$ Qwen-2.5-VL-7B를 활용하여 aesthetic quality & visual resemblance & semantic accuracy를 고려하여 reward signal로 활용함
+
+    ![](../images/2025-05-31/image-20250601113523802.png)
+
+    ![](../images/2025-05-31/image-20250601104602684.png)
+
+### 4.2.3 Code efficiency
+
+- Token Length Loss
+
+  ![](../images/2025-05-31/image-20250601104738191.png)
+
+  - $L_{gt}$: ground trugh SVG code token length
+  - $L_{pred}$: generated SVG code token length
+
+- Final Reward
+
+  위에 설명한 K(=3)개의 reward의 합
+
+  ![](../images/2025-05-31/image-20250601104913929.png)
+
 # 5. Experiments 
+
+## 5.1 Experimental Setup
+
+- Img2SVG
+
+  - Models
+    - Qwen-2.5-VL
+    - StartVector-1B
+  - Datasets
+    - SVG-Stack dataset (1.7M)
+      - 2.1M $\to$ 1,7M: image url / embedded base64 image가 너무 길 경우 제거하여 해당 데이터를 memorize하는걸 방지
+    - SVG-Stack-Hard Test set (0.6K)
+      - 3K $\to$ 0.6K: broken / white-background / low-color entropy / 500 token 이하 SVG 제거하여 evaluation 속도 향상
+    - SVG-Emoji
+    - SVG-Fonts
+    - SVG-Icons
+
+- Text2SVG
+
+  - Models
+    - Qwen3
+  - Datasets
+    - Flickr30k
+    - MM-Icons
+    - MM-Illustrations (Eval-only, OOD)
+
+- Img2SVG SVG-SFT
+
+  - Qwen2.5-VL (3B/7B)
+
+    - GPU
+
+      - 4 x 8 H100 GPUs (3B)
+      - 8 x 8 H100 GPUs (7B)
+
+      $\to$ 4d (3poch)
+
+    - lr: 1e-5
+    - max token: 32K 
+    - batch size: 1024
+
+- Img2SVG RLRF
+
+  - Models
+
+    - Qwen2.5-VL
+    - StarVector-1B
+
+  - Datasets
+
+    - SVG-Stack에서 20K high-entropy samples만 추출 (+ 500 token 이상의 rich in visual detail)
+    - batch size: 32
+      - roll-out: 64 $\to$ 2048 batch size
+
+  - GPU
+
+    - Qwen2.5VL
+
+      - 4 x 8 H100 GPUs 
+
+        $\to$ 3days (500 step)
+
+    - Qwen3
+
+      - 1 x 8 H100 GPUs
+
+        $\to$ 1day
+
+  - No KL Divergence term
+
+- Implementation detail
+
+  - code base
+    - SFT
+      - LLaMA-Factory : https://github.com/hiyouga/LLaMA-Factory
+    - RLRF
+      - EasyR1: https://github.com/xuyongfu/EasyR1-0530
+      - verl: https://github.com/volcengine/verl
+      - PipelineRL: https://huggingface.co/blog/ServiceNow/pipelinerl (Roll-out을 renderingtl iddle 현상을 완화해주는 framework)
+  - Dynamic MaxLength
+    - Batch 내 GT code의 max값을 기준으로 Max Length를 step별로 지정함 $\to$ 초기 학습시에 긴 output 생성을 방지하고 학습속도 향상하는 효과
+
+- Evaluation Metrics
+  - IMG2SVG
+    - SSIM, MSE: Pixel-level Fidelity
+    - DINO Score, LPIPS: Perceptual Similarity
+    - Code Efficiency: GT와의 distance (token-level) +면 더욱 compact한 code라는 뜻
+  - Text2SVG
+    - VLM-as-a-judge
+
+## 5.2 Evaluation
+
+- IMG2SVG
+
+  - 정량적 결과
+
+    ![](../images/2025-05-31/image-20250601114632610.png)
+
+  - OOD에 대한 정량적 결과
+
+    ![](../images/2025-05-31/image-20250601123034998.png)
+
+  - 정성적 결과
+
+    ![](../images/2025-05-31/image-20250601115134723.png)
+
+    ![](../images/2025-05-31/image-20250601122628879.png)
+
+    ![](../images/2025-05-31/image-20250601121340793.png)
+
+  - OOD에 대한 정성적 결과
+
+    ![](../images/2025-05-31/image-20250601123438173.png)
+
+    ![](../images/2025-05-31/image-20250601123453820.png)
+
+- Text2SVG
+
+  - 정량적 결과
+
+    ![](../images/2025-05-31/image-20250601121113788.png)
+
+  - 정성적 결과
+
+    - Qwen3-8B-RLRF vs. others
+
+      ![](../images/2025-05-31/image-20250601115208373.png)
+
+    ![](../images/2025-05-31/image-20250601110241335.png)
+
+    - Qwen3-8B-RLRF result
+
+      ![](../images/2025-05-31/image-20250601110334028.png)
+
+## 5.3 Ablation Studies
+
+- Temperature에 따른 성능분석
+
+  ![](../images/2025-05-31/image-20250601121804786.png)
+
+  - Temperature가 높아질수록 output의 diversity가 증가해, roll-out이 다양한 출력을 갖게 되고, 이는 GRPO으로 성능 향상에 기인함.
+
+- Roll-out 갯수에 따른 성능분석
+
+  ![](../images/2025-05-31/image-20250601121944420.png)
+
+  - roll-out 갯수가 증가할수록 GRPO덕분에 성능이 향상됨
+
+- SVG-SFT 유무에 따른 성능분석
+
+  ![](../images/2025-05-31/image-20250601122213920.png)
+
+  - SVG-SFT 학습 후에 RLHF를 하는것이 모델이 SVG 구조에 대한 이해를 할수 있게되어, 성능향상에 도움이 됨
+
+- Reward Signal에 따른 성능 분석
+
+  ![](../images/2025-05-31/image-20250601124051601.png)
+
+  ![](../images/2025-05-31/image-20250601124207272.png)
+
+## 5.4 Reward Hacking
+
+- Small ViewBox Hack
+
+  - model이 매우 작은 viewBox를 출력하는 경향을 발견함 
+
+    `<svg ... viewBox=0 0 1 1>`
+
+  - 이는 prediction된 box크기를 기준으로 gt image를 resize하여 reconstruction하였기 때문에, 결과적으로 모든 정보를 손실함으로써 reward를 증가시켰음
+
+  - 해결방안: original image로 resize수행하여 해결
+
+- SVG Length Collapse
+
+  - gt code의 token length의 절반이하일 경우, 매우 높은 reward를 제공하기에, 매우 짧은 code만 생성하곤 했음
+  - 해결방안: 이보다 짧을 경우 -1의 penalty를 강제 부여함. 또한, 초기에는 length loss weight를 0.1로 작게 주고, 점차 늘리도록 학습하여 해결
+
+- Text-in-Image hack
+  - CLIP-based reward를 사용한 Text2SVG task에서 <image> tag에 들어갈 부분에 <text> + prompt input을 넣는 형태로 reward를 hacking하고 있었음
+  - 해결책: <text> + prompt input형태는 전처리하여 제거하고, Qwen-2.5-VL-72B-base를 VLM-as-a-judge로 추가하여 해결함
