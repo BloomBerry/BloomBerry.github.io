@@ -216,4 +216,4 @@ title: "WEBAGENT-R1: Training Web Agents via End-to-End Multi-Turn Reinforcement
 
     - 인위적으로 interaction 수를 늘리는 test-time scaling 기법을 실험해보니, 실제로 좋아진다.
 
-      ![](../images/2025-06-03/image-20250604020201663.png
+      ![](../images/2025-06-03/image-20250604020201663.png)
