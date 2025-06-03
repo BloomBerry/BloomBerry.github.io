@@ -1,0 +1,38 @@
+---
+title: "WEBAGENT-R1: Training Web Agents via End-to-End Multi-Turn Reinforcement Learning"
+---
+
+
+
+# [WebAgent] WEBAGENT-R1: Training Web Agents via End-to-End Multi-Turn Reinforcement Learning
+
+- paper: https://arxiv.org/pdf/2505.16421
+- github: https://github.com/weizhepei/WebAgent-R1 (깡통)
+- archived (인용수: 1회, '25-06-03 기준)
+- downstream task: Multi-turn Web Automation
+
+# 1. Motivation
+
+- RL이 LLM의 reasoning 성능 향상에 기여한다는 최근 연구가 나타났다. (DeepSeek-R1)
+
+- 하지만 이는 math reasoning과 같은 non-interactive reasoning 분야에 대해서 single turn interaction을 위주로 연구되었다.
+
+- web agent연구는 multi-turn interaction을 학습하는 것이 challenging했기에 web browsing과 같은 분야에 적용이 어려웠다.
+
+  $\to$ WebAgent를 위한 end-to-end multi-turn RL framework를 제안해보자!
+
+# 2. Contribution
+
+- Dynamic Content Compression &  Asynchronous Trajectory Roll-out mechanism을 반영한 end-to-end multi-turn RL framework for Webagent, **Webagent-R1**을 제안함
+
+- Baseline Qwen-2.5-3B를 success-rate 등 각종 수치에서 성능 boosting (WebArena-Lite) 및 SOTA
+
+  ![](../images/2025-06-03/image-20250603223631176.png)
+
+- Behavior cloning, thinking-based-prompting, test-time scaling등 long-CoT reasoning의 유효성을 입증
+
+# 3. WebAgent-R1
+
+# 4. Experiments
+
+# 5. Related Works
