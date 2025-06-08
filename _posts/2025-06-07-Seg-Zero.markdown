@@ -249,4 +249,4 @@ $\to$ explicit reasoning + reinforcement learining으로 성능을 향상시켜�
 - Semantic segmentation분야에서 혁신적인 모델들이 등장했음
   - DeepLab, MaskFormer, SAM
 - Referring Expression Segmentation task는 이와는 다르게, 주어진 query에 해당하는 instance의 mask를 예측함으로써 더 복잡함
-  - LISA
+  - # LISA
