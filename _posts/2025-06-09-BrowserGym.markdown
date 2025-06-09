@@ -13,6 +13,8 @@ title: "[WebAgent] The BrowserGym Ecosystem for Web Agent Research"
 
 # 1. Motivation
 
+- LLM & VLM agent의 등장으로 다양한 Web Task benchmark가 등장했으나, 중구난방으로 code가 개발되어, 공평한 agent의 성능평가가 힘듦 $\to$ 
+
 # 2. Contribution
 
 # 3. BrowserGym
