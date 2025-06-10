@@ -50,7 +50,7 @@ title: "[WebAgent] The BrowserGym Ecosystem for Web Agent Research"
 
 - Implementation
 
-  - Agent입장에서는 해당 interaction loop는 Partially Observable Markov Decision Process (POMDP)로 개념화될 수 있음
+  - Agent 입장에서는 해당 interaction loop는 Partially Observable Markov Decision Process (POMDP)로 개념화될 수 있음
 
     - environment는 현재 관측값 & reward를 제공함
     - agent는 next action을 예측함
@@ -59,7 +59,7 @@ title: "[WebAgent] The BrowserGym Ecosystem for Web Agent Research"
 
     - 표준 OpenAI Gym API를 따름
 
-    - gymnasium interface를 통해 python으로 제공 가능함
+    - gymnasium interface를 통해 python으로 구현 가능함
 
       ![](../images/2025-06-09/image-20250609232620080.png)
 
@@ -69,11 +69,99 @@ title: "[WebAgent] The BrowserGym Ecosystem for Web Agent Research"
 
 ## 3.1 Extensive Observation Space
 
+- Main components: chat history, open tabs의 list, 현재 페이지의 content 정보 등
+
+![](../images/2025-06-09/image-20250610134826604.png)
+
+### Structured page description
+
+- 현재 페이지의 2가지 structured representations을 Chrome Developer Protocol을 사용해 추출
+  - raw DOM (Document Object Model)
+  - AXTree (Acessibility tree)
+  - \+ bid (unique id)를 element마다 부여함
+
+### Extra element properties
+
+- BrowserGym ID (bid): html 내 개별 요소별로 unqiue id를 부여해 애매모호한 interaction을 방지함
+- bbox (`left, top, width, height`): 4-tuple
+- visibility ratio (`visibility`): 0~1 값 사이. Set-of-Marks prompting에 사용 가능한지 여부 체크용.
+
+### Screenshot
+
+- raw RGB 형태로 제공
+
+### Open tabs
+
+- active page뿐만 아니라, 열린 page에 대해서도 agent는 접근 가능
+  - `active_page_idx, open_pages_urls, open_pages_titles`
+
+### Goal and chat messages
+
+- user instruction을 추출하는 두 가지 방법
+  - 명시적인 task goal (`goal_object`)
+  - Chat history를 통한 방법 (`chat_messages`)
+
+### Error feedback
+
+- 최종 수행된 action에 대한 error (`last_action_error`)만 제공함
+
+- loop가 종료되지 않고, 해당 내용을 feedback함으로써, agent로 하여금 self-correction을 next step에서 수행하도록 유도함
+
+  ![](../images/2025-06-09/image-20250610160355099.png)
+
 ## 3.2 Expandable Action Space
+
+- BrowserGym의 action space 근간은 executable python code이다.
+
+  ![](../images/2025-06-09/image-20250610160543609.png)
+
+- Agent는 Playwright page object에 접근할 수 있고, `send_message_to_user(text)`와 `report_infeasible(reason)`으로 chatting창과 상호작용 & task 종결을 할 수 있다.
+
+- `action_mapping_function`을 통해 제한된 action에 대해서만 수행가능하다.
+
+### Action mapping
+
+- `action_mapping`
+  - environment의 input action을 executable python code로 변환해주는 기능
+
+### High-level action set
+
+- predefined actions
+
+  ![](../images/2025-06-09/image-20250610181056209.png)
+
+  ![](../images/2025-06-09/image-20250610181329364.png)
 
 ## 3.3 Extensibility: create your own task
 
+- 새로운 task를 처음 접해보는 사람이 수행할때 두 가지만 정의해주면 된다.
+
+  ![](../images/2025-06-09/image-20250610181706969.png)
+
+  - `Setup`: 빈 `page` object로부터 시작해서, task의 시작점을 호출하고, task에 대한 설명을 raw string 혹은 openai-style message 형태 (multi-modal)로 목표를 제공한다.
+  - `Validate`: agent action이 수행된 후에 호출되며,  task의 완료 여부를 체크한다. 마지막에는 agent에 scalar reward + done flag를 제공한다.
+
 # 4. Unification of Web Agent Benchmarks
+
+- 기존의 web benchmark (6개) + WebLINX, VisualWebArena, AssistantBench를 제공함
+
+  ![](../images/2025-06-09/image-20250610182203777.png)
+
+- Gymnasium interface 기반 구현됨
+
+  ![](../images/2025-06-09/image-20250610182416966.png)
+
+- 장점
+
+  - silos를 깨부심: 통합된 benchmark는 general-purpose web agent 구축에 기여함
+  - 연구를 촉진함: 상호 비교의 시간 & 노력을 절감함
+  - noise를 제거함: 다양한 ablation 실험을 평가함
+
+### Task coverage
+
+### Metadata
+
+### Suggested evaluation parameters
 
 # 5. AgentLab
 
