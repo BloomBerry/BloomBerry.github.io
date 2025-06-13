@@ -159,29 +159,161 @@ title: "[WebAgent] The BrowserGym Ecosystem for Web Agent Research"
 
 ### Task coverage
 
+- MiniWoB
+  - 단일 HTML page 접근만 가능
+  - JavaScript로 평가
+  - 병렬 처리 지원
+- WebArena
+  - 6 domain의 real-world websites를 모방하기 위해 docker container 기반 self-hosting함
+  - 새로운 agent evaluation전에 초기화 진행해야 함
+  - 평가방식은 logic rules (URL match, message content, HTML content) 혹은 LLM-as-a-judge활용한 Semantic Match
+- VisualWebArena
+  - 기존 WebArena에서 2개 + 새로운 1개를 추가함
+  - vision-based tasks에 특화된 benchmark임 ("Find a pair of shoes that looks like this image")
+  - open-source VLM (`blip2-flan-t5-xl`)의 visual matching에 영향을 받음
+- WorkArena
+  - 백앤드 플랫폼 (self-hosted server)은 주문형으로 사용가능한 무료 ServiceNow 사용자 계정으로 Personal Developer Instance (PDI)가 필요함
+  - 대규모 병렬처리 가능
+- AssistantBench
+  - 214개의 realistic & time-consuming open-domain tasks로 구성됨
+  - 525 web page를 browsing하고, 258개의 서로 다른 website를 정확히 답변하는 task임 (**Information Retrieval tasks**)
+  - general assistant task / domain-specific task로 구성됨
+- WebLINK
+  - static & supervised benchmark임
+
 ### Metadata
 
-### Suggested evaluation parameters
+- domain-specific attributes (ex. task 난이도, task 카테고리)
+- default train/val split
+- task 순서
 
 # 5. AgentLab
 
+- Agent experiment를 BrowserGym에서 쉽게 연동할수 있게해주는 tool이다.
+- `Study`object를 정의하여 다양한 benchmark evaluation의 실험들을 병렬로 organize할 수 있다.
+- 완료된 study는 AgentXRay를 통해 조회할 수 있다.
+- Agent 특성상 동적 환경 변화로 모니터링이 어렵기 때문에, reproductibility를 보조하는 기능이 있다.
+- 새로운 agent를 생성할 builing block도 제공한다.
+
 ## 5.1 Launching experiments
+
+- agent evaluation 구현
+
+`study = make_study(
+benchmark="miniwob", # or "webarena", "workarena_l1" ...
+agent_args=[AGENT_4o_MINI],
+)
+study.run(n_jobs=5)`
+
+- 수동 agent 구현 및 오류 task만 추출
+
+`study = Study.load("/path/to/your/study/dir")
+study.find_incomplete(include_errors=True)
+study.run()`
 
 ## 5.2 Parallel experiments
 
+- 1개의 study를 처리하는데 수천개의 episode로 실험해야함 $\to$ 병렬처리가 필수임
+
+- backend로 `ray` 혹은 `joblib`을 사용하여 해결
+
+- 대부분의 compute requirements가 outsourced (LLM API, TGI server, web server) 되어있으므로, 실제 job의 compute requirement는 작음
+
+  $\to$ labtop기준 20 tasks / server machine 기준 50-100 tasks 병렬 처리 가능
+
+  $\to$ 대부분의 bottleneck이 LLM API 호출하는 부분임
+
+  $\to$ (Visual)WebArena의 경우, 2~4 tasks만 병렬처리 가능
+
+  ![](../images/2025-06-09/image-20250613110412311.png)
+
+  - 병렬처리 안한 상태
+
 ## 5.3 AgentXRay
+
+- Gradio-based interface
+
+  ![](../images/2025-06-09/image-20250613115152548.png)
 
 ## 5.4 Reproducibility
 
+- 여러 요인으로 인해 webagent 결과를 reproducibility를 하기 힘들다. BrowserGym은 이를 해결하는 방안을 제시한다.
+
+### 5.4.1 Factors affecting reproducibility
+
+- Software version: Playwright 등 software stack의 version에 따라 agent의 행동이 달라질 수 있음 $\to$ package version fixing이 필요함
+- API-based LLMs silently changing: commercial LLM은 fixed version이라 하더라도 미세하게 변경되고 있음. (최신 web knowledge 추가)
+- Live websites: website design의 변화, content의 availibility 여부, language setting 등 notice 없이 변경됨.
+- Stochatic Agents: non-deterministic한 LLM의 특성으로 temperature를 0으로 해결책임
+- Non-deterministic tasks: task 자체에 어느정도 stochastiscity가 있음. seed 고정으로 해결함.
+
+### 5.4.2 Reproducibility Features
+
+- Standard observation & action space
+- Package versions
+- Reproducability journal: `study.append_to_journal()`
+  - agent name, BrowserGym version, AgentLab version, benchmark name, metadata, experiment performances, etc
+- Reproduced result in the leaderboard
+  - community에 동기부여
+- ReproducibilityAgent
+  - `GenericAgent` 의 실험 결과를 재현하기 위해 `ReproducibilityAgent` 를 선언함
+
 ## 5.5 Extensibility: create your own agent
 
+- Agent class를 상속받아, 최소한의 구현만 하면 됨 
+
+  ![](../images/2025-06-09/image-20250613131107612.png)
+
+  - `get_action`: agent의 action logic을 설계하는 핵심 부분
+    - action을 string 형태로 출력
+    - `agent_info`: agent의 다양한 정보를 포함 (재현, 등 목적)
+
+- `AgentArgs`
+
+  - `make_agent` method를 통해 agent를 pickle화하여 다른 process에 전달이 용이하도록 함
+
+    ![](../images/2025-06-09/image-20250613131422167.png)
+
+    - MyAgentArgs는 `PYTHONPATH`경로에서 조회되어야 함
+
+- Dynamic Prompting
+
+  - HTML DOM 문서는 max token이 벗어나는 경우가 빈번하므로, input token 갯수를 자동으로 조절하는 기능 (by `fit_token`)
+
+    ![](../images/2025-06-09/image-20250613131736318.png)
+
+  
+
 ## 5.6 Extensibility: Plug your own LLM / VLM
+
+- 기본 LLM class를 제공하므로, 쉽게 custom LLM 구현 가능
+  - `BaseModelArgs`
+  - `AbstractChatModel`
+- cost & token tracking 기능도 기본적으로 탑재됨
 
 # 6. Experiments
 
 ## 6.1 Setup
 
+- Models
+
+  ![](../images/2025-06-09/image-20250613142235264.png)
+
+- Datasets
+
+  ![](../images/2025-06-09/image-20250613142208905.png)
+
 ## 6.2 Results
+
+- 정량적 결과
+
+  ![](../images/2025-06-09/image-20250613142311929.png)
+
+  - Tool Use를 학습한 *Claude-3.5-Sonnet*이 성능이 제일 좋음
+
+  - Total tokens & $/M tokens & API Cost
+
+    ![](../images/2025-06-09/image-20250613142428137.png)
 
 # 7. Related Works
 
