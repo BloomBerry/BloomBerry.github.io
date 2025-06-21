@@ -1,0 +1,10 @@
+---
+title: "# WebRL: Training LLM Web Agents Via Self-Evolving Online Curriculum Reinforcement Learning"
+---
+
+
+
+# [WebAgent] WebRL: Training LLM Web Agents Via Self-Evolving Online Curriculum Reinforcement Learning
+
+- paper: https://arxiv.org/pdf/2411.02337
+- github: https://github.com/THUDM/WebRL
