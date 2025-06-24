@@ -8,3 +8,80 @@ title: "# WebRL: Training LLM Web Agents Via Self-Evolving Online Curriculum Rei
 
 - paper: https://arxiv.org/pdf/2411.02337
 - github: https://github.com/THUDM/WebRL
+- ICLR 2025 accepted (인용수: 9회, '25-06-24 기준)
+- downstream task: webarena
+
+# 1. Motivation
+
+- 기존의 LLM기반 Web agents는 대부분 조작된 prompt와 LLM API를 활용하여 web page를 이해하고 조작했는데, 이는 비용이 비싸고, 시간이 오래걸린다.
+
+- *Sparsity & cost of feedback signals*: open-source LLM은 pretraining/post-training 시에 decision-centric data의 부족으로 전문적인 web agent 수준에 성능이 미치지 못한다.
+
+- *Insufficienty of training tasks*: 최근에 Imitation learning (SFT) 기반으로 연구가 시도 되었으나, web interaction의 online nature를 반영하기에는 데이터의 양이 불충분하고, continual improvement가 힘들다. 
+
+- *Policy Distribution drift in online learning*: 학습 중에 catastrophic forgetting이 생길 수 있다.
+
+  $\to$ 이러한 문제를 해결하기 위해 WebRL framework를 제안해보자!
+
+# 2. Contribution
+
+- 새로운 자가 발전하는 LLM기반 web agent로서, Curriculum RL framework인 WebRL을 제안함
+  - WebArena 환경에서 최초로 RL을 도입했음
+  - ORM (Output-supervised Reward Model) 적용
+- 3가지 핵심 challenge를 풀고자 했음
+  - 학습 task의 부족 $\to$ Self-evolving curriculum & adaptive learning 전략
+  - Feedback signal의 sparsity $\to$ confidence 기반의 threshold 조절
+  - Distribution shift $\to$ KL Divergence + Experience replay buffer
+- WebArena-benchmark에서 SOTA를 달성함 
+  - Chatgpt보다 160% 성능이 우수함
+
+# 3. WebRL
+
+- Framework
+
+  ![](../images/2025-06-24/image-20250624211137522.png)
+
+  - Agent는 지속적으로 Environment와 상호작용하면서 실시간 trajectory data를 취합함.
+  - 해당 상호작용은 Agent의 현재 상태에서의 proficiency를 고려하여  Self-evolving curriculum 전략에 가이드를 받아 진행됨
+  - ORM (Outcome-supervised Reward Model) 역시 학습하여 task의 success를 평가함
+  - KL-Constraint + Relpay buffer를 두어 polciy update algorithm을 조절하여 극단적인 policy shift를 방지함
+
+- Algorithm
+
+  ![](../images/2025-06-24/image-20250624212141849.png)
+
+- ORM Training
+
+  - LLM 모델에게 최종 web page HTML + agent의 action history를 주고, 해당 task를 success $\to$ 1 else $\to$ 0을 주도록 학습함
+
+    ![](../images/2025-06-24/image-20250624215805305.png)
+
+  - WebRL은 학습된 ORM 모델을 활용하여 Reward signal을 도출함
+
+## 3.1 Self-Evolving New Instruction for Curriculum Learning
+
+- 매 Phase마다 (Curriculum Learning으로) task를 생성하면서 학습 task부족 이슈를 해결함
+
+- 학습이 진행될수록, task의 난이도는 상승함
+
+- 2 step approach를 사용
+
+  - generation step: in-breadth evolving approach를 사용하여 이전 interaction phase들에서 fail한 task를 seed로 활용하여 새로운 instruction을 생성함
+
+  - filtering step: 학습된 critic 모델을 활용하여 생성된 instruction중, 해당 환경과 align되어 있고, 요구되는 어려움 난이도가 feasible한 것만 남기게 함
+
+    - critic score가 0.05 ~0.75 사이에 존재해야 함.
+
+    - 수동으로 생성된 task를 분별하여 WebArena에서 수행하지 못하는 task를 걸러넴
+
+      $\to$ GPT를 써서 해당 infeasible task를 제외시킴
+
+      ![](../images/2025-06-24/image-20250624215845162.png)
+
+## 3.2 Reinforcement Learning for LLMs in Online Web Environments
+
+
+
+# 4. Experiments
+
+# 5. Related Works
