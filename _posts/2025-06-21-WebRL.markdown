@@ -80,6 +80,28 @@ title: "# WebRL: Training LLM Web Agents Via Self-Evolving Online Curriculum Rei
 
 ## 3.2 Reinforcement Learning for LLMs in Online Web Environments
 
+- 정책 모델 목표함수
+
+  ![](../images/2025-06-24/image-20250625142120613.png)
+
+  - $max_{\pi_\theta}$: 정책 $\pi_\theta$의 매개변수 $\theta$에 대해 수식의 값을 최대화합니다.
+  - $\mathbb{E}_{I \sim \rho(I),a_t \sim \pi_\theta(\cdot|s_t)}$: 목표 함수의 값은 현재 단계의 작업 분포 $\rho(I)$에서 추출된 instruction I와, 현재 정책 $\pi_\theta$에 따라 상태 $s_t$에서 추출된 행동 $a_t$에 대한 기대값. 즉, 다양한 작업 환경에서 현재 정책을 따랐을 때의 평균적인 결과를 의미.
+  - $\sum_{t=0}^T$: 시간 단계 \(t=0\)부터 종료 시간 \(T\)까지의 합산. 각 시간 단계에서 얻는 보상과 정책 관련 항을 누적.
+  - $r(s_t, a_t, I)$: 시간 t에 상태 $s_t$에서 행동 $a_t$를 취하고 instruction I를 따랐을 때 얻는 보상. 웹 에이전트 태스크에서는 일반적으로 작업 성공 시에만 마지막 단계에서 1의 보상을 받고, 그 외에는 0의 보상을 받는 희소(sparse)한 형태임.
+  - $\beta \log \pi_{\text{ref}}(a_t|s_t, I)+\beta\mathcal{H}(\pi_\theta)$: 이 항은 현재 정책 $\pi_\theta$가 이전 단계의 정책 $\pi_{\text{ref}}$에서 크게 벗어나지 않도록 제약하는 역할 수행. $\beta$는 이 제약의 강도를 조절하는 계수. 이 값을 최대화하는 것은 $\pi_\theta$와 $\pi_{\text{ref}}$ 간의 KL-divergence를 최소화하는 것과 관련이 있음. 이는 온라인 학습 중 발생하는 정책 분포 드리프트(policy distribution drift)를 완화하여 안정적인 학습에 기여함.
+
+- 가치 모델 (V) 손실 함수
+
+  - 목적: 주어진 action, instruction, state를 보고 reward를 예측하는 모델
+
+  ![](../images/2025-06-24/image-20250625165455026.png)
+
+  - $L(V)$: 가치 네트워크 V의 손실 함수.
+  - $E_{\nu}[\dots]$: 데이터 분포 \($\nu$)에 대한 기대값. 데이터 $\nu$는 학습 과정에서 수집된 궤적들로 구성.
+  - $r(s_T, a_T, I)$: 마지막 상태 $s_T$에서 행동 $a_T$를 통해 얻은 보상. 여기서는 작업 성공 시 1, 실패 시 0의 이진 보상.
+  - $V(s, a, I)$: 가치 네트워크가 예측하는 특정 상태 s, 행동 a, 명령어 I에 대한 가치. 이 손실 함수에서는 주로 최종 상태에서의 성공 확률을 예측하는 데 사용.
+  - $\log V(s, a, I)$: 가치 네트워크가 성공(보상 1)을 예측할 확률의 로그값.
+  - $\log(1 - V(s, a, I))$: 가치 네트워크가 실패(보상 0)를 예측할 확률의 로그값입니다.
 
 
 # 4. Experiments
