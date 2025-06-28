@@ -21,8 +21,6 @@ title: "CowPilot: A Framework for Autonomous and Human-Agent Collaborative Web N
 
   $\to$ 사람의 개입을 최소화하되, 사람과 interaction이 가능한 web agent를 구축해보자!
 
-# 2. Contribution
-
 # 2. Contributions
 
 - Human-Agent interaction이 가능한 light-weight framework인 COWPilot (<u>Co</u>llaborative <u>W</u>eb navigation)을 제안함
