@@ -89,19 +89,24 @@ title: "CowPilot: A Framework for Autonomous and Human-Agent Collaborative Web N
   - 2가지 버전을 지원함
     - Fully autonomous mode: no asking mode
     - Copilot mode: human / agent가 협력하여 task를 수행
+  
 - Data Collection from Websites
-  - Chrome browser를 통해 작업하는 임의의 website에서 data annotation tool로 활용 가능	
+  - Chrome browser를 통해 작업하는 임의의 website에서 data annotation tool로 활용 가능
+    
+    ![](../images/2025-06-28/image-20250628235541758.png)
+    
     - 추가적인 self-hosted website가 불필요 $\to$ Miricanvas Designer들에게 해당 extension을 설치하여 log를 쌓는다면 대박이겠다!
+    
   - LLM/Human agent의 모든 action history를 tracking 가능함
     - step-level: 매 step이 task 성공에 기여했는지 human의 판단
     - task-level: 전체 trajectory가 task에 성공했는지 판단
-
+  
 - Evaluation & Comparative Analysis of Agent Performance
   - LightLLM framwork을 통해 다양한 open/closed-source model에 접근이 쉽도록 구현됨
 
 # 4. Experiments
 
-- Dataset: WebArena 
+- Dataset: WebArena
   - 27 task에서 평가를 진행 (easy, medium, hard levels)
     - Top-performing agent의 step count를 기준으로 난이도를 부여함
       - easy: <2
@@ -114,6 +119,10 @@ title: "CowPilot: A Framework for Autonomous and Human-Agent Collaborative Web N
       - copilot-mode
         - gpt-4o-2024-08-06
         - Llama-3.1-8B-instruct
+
+- Prompt
+
+  ![](../images/2025-06-28/image-20250628235838357.png)
 
 - 정량적 결과
 
@@ -161,4 +170,4 @@ title: "CowPilot: A Framework for Autonomous and Human-Agent Collaborative Web N
 ## 5.2 LLM Agents for Web Automation
 
 - HUML structures & Accessibility trees기반
-- Visual-based System 기반: ㄴㄷㄷㅁㅊㅅ, 퍄녀미ㅉ듐ㄱ둠, ㅉ듀혀ㅡ
+- Visual-based System 기반: WebShop, WebArena, WebLINX
