@@ -80,6 +80,111 @@ title: "AesthetiQ: Enhancing Graphic Layout Design via Aesthetic-Aware Preferenc
 
 ## 3.3 Aesthetic-Aware Preference Alignment
 
+- 개별 요소에 대한 rendering 결과는 미분불가능한 본연의 특성으로 인해 심미적 아름다움의 정도를 학습에 반영하지 못함
 
+- 이를 해결하고자 $M_{judge}$ 를 두어, 여러 pair의 layout에 대해 보고, 그 심미적 score를 결정하도록 함으로써 이 문제 (non-differentiable)를 우회함.
+
+  ![](../images/2025-07-03/image-20250705222109999.png)
+
+  - $d \in \{1,2\}$: binary decision which one is better
+
+  - $P_{judge}$: Prompt for judge
+
+  - $G^i=R(E^i, W_c^i, H_c^i)$
+
+    - $E^i$: i번째 (1 or 2) layout
+
+    - $W_c^i, H_c^i$: i번째 canvas width, height
+
+    - $R$: Rendering function
+
+    - $G^i$: Rendering된 이미지
+
+      ![](../images/2025-07-03/image-20250705222214838.png)
+
+    - $G^w$: best graphi layout
+
+    - $G^r$: worst graphic layout
+
+- AAPA Loss
+
+  ![](../images/2025-07-03/image-20250705222328260.png)
+
+  - $\pi_M$: 현재 policy model
+  - $\pi_{\hat{M}}$: reference model
+
+- Quality Metircs기반 Layout Filtering
+
+  - 고품질 layout이 학습성능에 중요하다고 가정하고, 특정 threshold 이상의 layout만 학습함
+
+    - Align quality
+
+      ![](../images/2025-07-03/image-20250705222936665.png)
+
+      - $e_i$=![](../images/2025-07-03/image-20250705223130543.png)
+      - ![](../images/2025-07-03/image-20250705222954620.png)
+      - ![](../images/2025-07-03/image-20250705223007012.png)
+      - ![](../images/2025-07-03/image-20250705223028745.png)
+      - ![](../images/2025-07-03/image-20250705223043420.png)
+
+    - Overlap quality
+
+      ![](../images/2025-07-03/image-20250705223205480.png)
+
+    - Quality score = average (Align Quality, Overlap Quality)
+
+  - Threshold
+
+    ![](../images/2025-07-03/image-20250705223236706.png)
+
+- Aesthetic-Aware Layout Evaluation
+
+  - Test data 의 정답셋과 예측한 layout에 대해 win rate를 매김
+
+    ![](../images/2025-07-03/image-20250705223350209.png)
+
+    ![](../images/2025-07-03/image-20250705223426599.png)
+
+    ![](../images/2025-07-03/image-20250705223439392.png)
+
+
+
+## 3.4 Pretraining to Enhance Layout Understanding
+
+- 80K template dataset를 취득하여 position-aware layout instruction tuning을 학습
 
 # 4. Experiments
+
+- Dataset
+
+  - Crello (23.3K)
+  - WebUI (70K)
+
+- Model : InternVL
+
+- Evaluation
+
+  - Mean IoU (mioU)
+  - $M_{judge}$ win rate
+
+- 정량적 결과
+
+  - Crello
+
+  ![](../images/2025-07-03/image-20250705232709834.png)
+
+- WebUI
+
+  ![](../images/2025-07-03/image-20250705232819143.png)
+
+- 정성적 결과
+
+  ![](../images/2025-07-03/image-20250705232855182.png)
+
+- Ablation Studies (Model Scale / Pretraining 유무 / Quality Filtering 유무)
+
+  ![](../images/2025-07-03/image-20250705232955202.png)
+
+- 다양한 Aspect Ratio에 따른 결과
+
+  ![](../images/2025-07-03/image-20250705233136988.png)
