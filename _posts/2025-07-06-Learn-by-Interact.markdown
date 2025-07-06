@@ -41,7 +41,13 @@ title: "Learn-by-Interact: A Data-Centric Framework for Self-Adaptive Agents in 
 - 새로운 retrieval 방식 제안
 
   - retrieval pipeline	
+
     - model-based approach: LLM이 instructions, interaction histories, 현재 observation을 토대로 요약된 query를 생성함. 해당 query는 retrieval model은 query를 통해 적절한 example을 검색함
+
+      - Dense Retriever로는 google의 text embedding을 활용
+
+        https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings
+
     - observation-based approach: 현재 observation이 생성한 trajectories 중에 존재하는 examples를 검색함
 
 # 3. Learn-by-Interact
@@ -107,6 +113,8 @@ title: "Learn-by-Interact: A Data-Centric Framework for Self-Adaptive Agents in 
 
     - line 8~9: model-based retrieval
 
+      - $m_1=5, m_2=5$: upper-bound retrieval 갯수
+
       - LLM이 instruction *I*, Trajectories *H*, observation *o*를 기반으로 query(new instruction)를 생성
 
         - write query prompt (line 8)
@@ -145,11 +153,19 @@ title: "Learn-by-Interact: A Data-Centric Framework for Self-Adaptive Agents in 
 
   - RAG: conventional RAG처럼 instruction 기반으로 document에서 document를 추출하여 LLM에 augment하는 방식
 
+    - upper-bound for Retreival: 50 documents or maximum length of LLMs
+
   - Data Distill: back-construciton을 제외한 algorithm 1 pipeline으로 data synthesize + algorithm 2 (agentic retrieval)한 방식
 
-  - Reflextion: exector & LLM에게 언어적 feedback을 받는 방식
+  - Reflexion: exector & LLM에게 언어적 feedback을 받는 방식
 
-  - Language Agent Tree Search (LATS): ReACT의 진화된 버전으로, Online으로 reasoning, acting, planning을 trajectory 내내 진행한 방식
+    - maximum trials: 3번
+
+  - Language Agent Tree Search (LATS): ReACT의 진화된 버전으로, Online으로 reasoning, acting, planning을 trajectory 내내 진행한 방식 (paper와 동일한 hyper-parameters 사용)
+
+    - generated action의 수: 5번
+    - depth limit: 15
+    - value function weight: 0.8
 
 - Training-based 방식
 
@@ -236,3 +252,59 @@ title: "Learn-by-Interact: A Data-Centric Framework for Self-Adaptive Agents in 
   - LLM filtering 전후 생성된 데이터 분포
 
     ![](../images/2025-07-06/image-20250706225303694.png)
+
+  - Models
+
+    - ICL evaluation: Gemini-1.5-pro, Claude-3.5-sonnet, Codegemma-7B, Codestral-22B
+    - tuning for data quality filtering: Codegemma-7B, Codestral-22B w/ LoRA
+
+## 4.4 Evaluation
+
+- SWE-bench: executaion accuracy (pass@1)
+- WebArena: fuzzy-match & string match with Claude-3.5-sonnet 기반의 success rate
+- OSWorld: sample-specific evaulation scripts 기반 functional correctness로 평가
+- Spider2-V: file-based comparison, information-based validation, execution-based verification
+
+## 4.5 Results
+
+### 4.5.1 Training-free Evaluation
+
+- 정량적 결과
+
+  ![](../images/2025-07-06/image-20250706231647734.png)
+
+#### 4.5.2 Training-based Evaluation
+
+- 정량적 결과
+
+  ![](../images/2025-07-06/image-20250706231815863.png)
+
+### 4.5.3 Analysis
+
+- Inference Efficiency
+
+  ![](../images/2025-07-06/image-20250706232001314.png)
+
+- The Impact of Retrieval (ICL-setting): 2가지 retrieval 유/무에 따른 성능 분석 (model-based / observation-based)
+
+  ![](../images/2025-07-06/image-20250706232204660.png)
+
+  - Instruction-based: conventional RAG 기법으로, instruction 기반의 document retrieval을 의미함.
+  - Observation-based: observation 기반의 document retrieval을 의미함 (Agentic workflow에 이게 더 도움이 됨)
+  - Model-based: Instruction + interaction history + current observation 기반의 retireval (이게 제일 좋음)
+
+- Data granularity
+
+  ![](../images/2025-07-06/image-20250706234021259.png)
+
+  - Data의 trajectory step 수에 따라 3가지 그룹으로 분류
+    - short: trajectory steps < 5
+    - medium: 5 $\leq$ trajectory steps < 10
+    - long: 10 $\leq$ trajectory steps
+  - 각 그룹별로 섞어 쓰는게 성능에 도움이 됨 $\to$ 다양한 데이터 본연의 특성
+
+### 4.5.4 Scaling Laws
+
+- Synthesized data의 양에 따른 성능 분석
+
+  ![](../images/2025-07-06/image-20250706234155895.png)
