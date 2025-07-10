@@ -1,0 +1,37 @@
+# [RL] From $r$ to $Q^*$: Your Language Model is Secretly a Q-Function
+
+- paper: https://arxiv.org/pdf/2404.12358
+- github: X
+- COLM 2024 accepted (인용수: 136회, '25-07-10 기준)
+- downstream task:
+
+# 1. Motivation
+
+- DPO (Direct Preference Optimization)이 RLHF (Reinforcement Learning with Human Feedback)의 대체안으로 등장하였다. 
+- 하지만 DPO와 RLHF는 misalignment 이슈가 있었다.
+  - RLHF는 **token-level**의 MDP (Markov Decision Process)인 반면, 
+  - DPO는 **전체 응답을 하나의 arm**으로 표현하는 *Contextual Bandid* 문제로 치환한다.
+    - Contextual Bandid?
+      - Contextual: 문맥, 여기서는 입력으로 제공하는 Instruction에 해당
+      - Bandid: 도박 슬롯머신의 땡기는 arm에서 파생된 용어로, 여기서는 전체 응답을 하나의 arm으로 표현
+
+$\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제안해보자!
+
+# 2. Contribution
+
+- DPO를 LLM의 binary preference-feedback기반의  token-level MDP setting로 볼수 있는 새로운 시각을 제안한다.
+
+  - LLM의 logit이 expected future reward인 optimal Q function으로 정의됨을 보임으로써 
+  - DPO 학습이 token-level reward function을 내재적으로 학습함
+
+- 유도한 이론적 결과를 뒷받침할 3가지 실제적인 통찰력 제공함
+
+  - DPO 학습이 contextual bandit로 학습했음에도 (sparse reward), per-token interpretation이 가능함을 보임
+
+  - DPO기반의 likelihood search 방식이 최신 연구들에서 보인 reward function기반의 decoding과정과 같음을 보임
+
+    - ## 초기 policy & reference를 선택하는게 implicit reward의 trajectory 결정에 중요함을 보임
+
+# 3. From $r$ to $Q^*$
+
+# 4. Experiments
