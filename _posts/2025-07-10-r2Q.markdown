@@ -29,9 +29,121 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
   - DPO 학습이 contextual bandit로 학습했음에도 (sparse reward), per-token interpretation이 가능함을 보임
 
   - DPO기반의 likelihood search 방식이 최신 연구들에서 보인 reward function기반의 decoding과정과 같음을 보임
-
-    - ## 초기 policy & reference를 선택하는게 implicit reward의 trajectory 결정에 중요함을 보임
+    - 초기 policy & reference를 선택하는게 implicit reward의 trajectory 결정에 중요함을 보임
 
 # 3. From $r$ to $Q^*$
 
-# 4. Experiments
+## 3.1 The Token-level MDP for LLMs
+
+- Bradley-Terry preference model
+
+  ![](../images/2025-07-06/image-20250712122141955.png)
+
+  - $\bold{s}_i^w, \bold{a}_i^w$: win (preferred) state, win (preferred) action
+  - $\bold{s}_i^;, \bold{a}_i^;$: lose (unpreferred) state, lose (unpreferred) action
+  - $N$: win trajectory length
+  - $M$: lose trajectory length
+  - $p^*$: win trajectory의 reward가 loss trajectory reward에 비해 선호되는 정도 (probability)
+
+## 3.2 The Classifical RLHF Methods
+
+- Classical RLHF Method (PPO) (Non token-level PPO == contextual bandid)
+
+  ![](../images/2025-07-06/image-20250712122615118.png)
+
+  - reward는 contextual bandid로 학습됨 $\to$ final step에서만 학습에 반영됨 ($\bold{a} == EOS$)
+
+    ![](../images/2025-07-06/image-20250712122708237.png)
+
+  - 실제로는 Token-level PPO로 아래처럼 적용됨
+
+    ![](../images/2025-07-06/image-20250712122932679.png)
+
+## 3.3 Direct Preference Optimization
+
+- PPO와 다르게 완벽한 contextual bandid setting에서 학습이됨 (Non token-level)
+
+- KL-contextual bandit version of RL
+
+  ![](../images/2025-07-06/image-20250712123654082.png)
+
+- Reward term로 묶으면
+
+  ![](../images/2025-07-06/image-20250712123852334.png)
+
+- Preference Optimization Loss
+
+  ![](../images/2025-07-06/image-20250712123919030.png)
+
+# 4. Theoretical Insights
+
+## 4.1 DPO as a $Q$-Function in the Token Level MDP
+
+- Contextual Bandit 상에서 $Q$ Function
+
+  ![](../images/2025-07-06/image-20250712164130408.png)
+
+  $\to$ token-level 정의가 안되므로, 새로운 정의를 제안하자
+
+- RL in the Token-Level MDP
+
+  - Maximum Entrophy setting (equation 5)
+
+    ![](../images/2025-07-06/image-20250712193441423.png)
+
+    - $Q^*$: t step이후 action $\bold{a}_t$, state $\bold{s}_t$로 optimal policy $\pi^*$ㅇ에 의해 기대되는 미래의 reward 총합
+
+    - $V^*$: Optimal policy $\pi^*$가 모든 action들에 대해 수행하는 probability 총합
+
+      ![](../images/2025-07-06/image-20250712193813359.png)
+
+- From $r$ to $Q^*$
+
+  - Bellman Equation으로 구현 (재귀표현) (equation 7)
+
+    ![](../images/2025-07-06/image-20250712215859900.png)
+
+- DPO가 best estimate $Q^*$를 학습함을 유도
+
+  - 위 식을 reward $r$에 대해 정리하면
+
+    ![](../images/2025-07-06/image-20250712221804324.png)
+
+  - 위 식에 $Q^* - V^*$를 $\pi^*$에 대해 정리하면
+
+    ![](../images/2025-07-06/image-20250712222154938.png)
+
+  - Preferrence indeuced model의 probability는
+
+    ![](../images/2025-07-06/image-20250712222512392.png)
+
+  - DPO Loss는
+
+    ![](../images/2025-07-06/image-20250712222529242.png)
+
+## 4.2 Token-Level DPO Can Parameterize Any Dense Reward Function
+
+- equation 5 & equation 7을 유도하면
+
+  ![](../images/2025-07-06/image-20250712224144971.png)
+
+# 5. Practical Insights
+
+- model: Pythia-2.8B
+- dataset: Reddit
+
+## 5.1 Does DPO Learn Credit Assignment?
+
+- 질문: 고용에 관한 negotiation 상황
+
+  ![](../images/2025-07-06/image-20250712225154299.png)
+
+  - Salary range와 같이 error response에 대해 reward를 잘 주는걸 확인 
+
+## 5.2 Connecting Guided Decoding and Search to Likelihood-Based DPO Optimization
+
+
+
+## 5.3 Connections Between Proxy Tuning and Reinforcement Learning
+
+## 5.4 Likelihoods should decrease when using DPO
