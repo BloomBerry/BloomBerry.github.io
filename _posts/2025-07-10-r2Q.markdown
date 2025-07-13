@@ -47,7 +47,7 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
 
 ## 3.2 The Classifical RLHF Methods
 
-- Classical RLHF Method (PPO) (Non token-level PPO == contextual bandid)
+- Classical RLHF Method (PPO) (Non token-level PPO == contextual bandid) **(equation 2)**
 
   ![](../images/2025-07-06/image-20250712122615118.png)
 
@@ -87,7 +87,7 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
 
 - RL in the Token-Level MDP
 
-  - Maximum Entrophy setting (equation 5)
+  - Maximum Entrophy setting **(equation 5)**
 
     ![](../images/2025-07-06/image-20250712193441423.png)
 
@@ -99,7 +99,7 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
 
 - From $r$ to $Q^*$
 
-  - Bellman Equation으로 구현 (재귀표현) (equation 7)
+  - Bellman Equation으로 구현 (재귀표현) **(equation 7)**
 
     ![](../images/2025-07-06/image-20250712215859900.png)
 
@@ -123,7 +123,7 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
 
 ## 4.2 Token-Level DPO Can Parameterize Any Dense Reward Function
 
-- equation 5 & equation 7을 유도하면
+- equation 5 & equation 7을 유도하면 **(equation 10)**
 
   ![](../images/2025-07-06/image-20250712224144971.png)
 
@@ -142,8 +142,30 @@ $\to$ DPO를 RLHF의 token-level MDP로 바라보는 새로운 접근법을 제�
 
 ## 5.2 Connecting Guided Decoding and Search to Likelihood-Based DPO Optimization
 
+- LLM decoding 시 검색 기반 후처리 방식이 등장하고 있음 (Beam Search, etc)
 
+- Equation 7(Bellman Equation) 을 K개의 action으로 확장해보면
 
-## 5.3 Connections Between Proxy Tuning and Reinforcement Learning
+  ![](../images/2025-07-06/image-20250714072914259.png)
 
-## 5.4 Likelihoods should decrease when using DPO
+- Equation 10을 위식에 대입하여 정리하면
+
+  ![](../images/2025-07-06/image-20250714073252535.png)
+
+  $\to$ 시작 상태는 고정되므로 ($V^*(\bold{s}_0)$) optimal policy ($\pi^*$) 기반 검색 알고리즘은 해당 최적 정책에 대한 <u>likelihood 검색</u>과 동일함
+
+- Beam의 갯수에 따른 성능 분석
+
+  ![](../images/2025-07-06/image-20250714073641370.png)
+
+  - Beam이 5개까지는 성능이 향상됨 $\to$ reward hacking을 방지하기 때문으로 사료됨
+
+## 5.3 Likelihoods should decrease when using DPO
+
+- SFT이후 DPO를 진행하면 preferred sample에 대한 likelyhood가 증가할걸로 예상되나, 실제로는 그렇지 않음
+
+  ![](../images/2025-07-06/image-20250714074252964.png)
+
+- 이는 DPO에 사용되는 KL Divergence를 유심히 보면 알게됨
+
+  ![](../images/2025-07-06/image-20250714074515397.png)
