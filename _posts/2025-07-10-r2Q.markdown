@@ -1,3 +1,9 @@
+---
+title: "[RL] From $r$ to $Q^*$: Your Language Model is Secretly a Q-Function"
+---
+
+
+
 # [RL] From $r$ to $Q^*$: Your Language Model is Secretly a Q-Function
 
 - paper: https://arxiv.org/pdf/2404.12358
