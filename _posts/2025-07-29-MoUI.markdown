@@ -1,0 +1,20 @@
+# [MobileUI] From Perception to Reasoning: Enhancing Vision-Language Models for Mobile UI Understanding
+
+- paper: https://aclanthology.org/2025.findings-acl.1295.pdf
+- github: https://github.com/iitbsrib/MoUI (깡통)
+- ACL 2025 accepted (인용수: 0회, '25-07-29 기준)
+- downstream task: Mobile UI grounding & QA
+
+# 1. Motivation
+
+- VLM에게 정밀하게 text & visual element를 grounding하는 것은 해당 요소를 인식하고, text query의 context를 고려하여 이해해야하는 어려움이 있다.
+
+  ![](../images/2025-07-29/image-20250729222858353.png)
+
+  $\to$ User의 의도와 Mobile UI의 시각적 의미간의 gap을 bridge하는 학습 방법을 제안해보자!
+
+# 2. Contribution
+
+# 3. MoUI
+
+# 4. Experiments
