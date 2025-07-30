@@ -1,3 +1,9 @@
+---
+title: "ShowUI: One Vision-Language-Action Model for GUI Visual Agent"
+---
+
+
+
 # [WebGUI] ShowUI: One Vision-Language-Action Model for GUI Visual Agent
 
 - paper: https://arxiv.org/pdf/2411.17465

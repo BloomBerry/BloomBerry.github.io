@@ -1,3 +1,9 @@
+---
+title: "From Perception to Reasoning: Enhancing Vision-Language Models for Mobile UI Understanding"
+---
+
+
+
 # [MobileUI] From Perception to Reasoning: Enhancing Vision-Language Models for Mobile UI Understanding
 
 - paper: https://aclanthology.org/2025.findings-acl.1295.pdf
