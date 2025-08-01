@@ -3,10 +3,10 @@ layout: none
 ---
 
 var idx = lunr(function () {
-  this.field('title')
+  this.field('title', { boost: 10 })
   this.field('excerpt')
-  this.field('categories')
-  this.field('tags')
+  this.field('categories', { boost: 5 })
+  this.field('tags', { boost: 5 })
   this.ref('id')
 
   this.pipeline.remove(lunr.trimmer)
@@ -57,7 +57,7 @@ $(document).ready(function() {
           '</div>';
       }
       else{
-    	  var searchitem =
+    	var searchitem =
           '<div class="list__item">'+
             '<article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">'+
               '<h2 class="archive__item-title" itemprop="headline">'+
