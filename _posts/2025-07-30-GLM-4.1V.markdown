@@ -1,3 +1,9 @@
+---
+title: "[MM] GLM-4.1V-Thinking: Towards Versatile Multimodal Reasoning with Scalable Reinforcement Learning"
+---
+
+
+
 # [MM] GLM-4.1V-Thinking: Towards Versatile Multimodal Reasoning with Scalable Reinforcement Learning
 
 - paper: https://arxiv.org/pdf/2507.01006

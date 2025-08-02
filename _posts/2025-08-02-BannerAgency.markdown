@@ -5,8 +5,8 @@ title: "[Agent] BannerAgency: Advertising Banner Design with Multimodal LLM Agen
 # [Agent] BannerAgency: Advertising Banner Design with Multimodal LLM Agents
 
 - paper: https://arxiv.org/pdf/2503.11060
-- github: 
-- archived (인용수: )
+- github: X
+- archived (인용수: 0회, 25-08-02 기준)
 - downstream task: Banner 자동 디자인
 
 # 1. Motivation
