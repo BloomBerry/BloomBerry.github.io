@@ -325,7 +325,7 @@ $\to$ Frozen backbone으로 활용 가능한 다재다능한 Single visual encod
 
   - Earth Observation 
 
-    ![](../images/2025-08-30/image-20250831143528837.png)
+    ![w](../images/2025-08-30/image-20250831143528837.png)
 
     ![](../images/2025-08-30/image-20250831143602353.png)
 
