@@ -21,8 +21,40 @@ title: "[B-Rep Generation] HoLa: B-Rep Generation using a Holistic Latent Repres
 
   $\to$ 인접하는 표면간에 접선이 경계곡선으로 표현되는 사전 지식 (inductive bias)를 바탕으로, 통합된 표현공간으로 encoding해보면 어떨까?
 
+  ![](../images/2025-09-27/image-20250928231846891.png)
+
 # 2. Contribution
 
+- 3차원 표면 pair 간의 연결성을 (intersection) module을 통해 연결유무를 파악하고, 표면 & 곡선 정보를 통합된 latent로부터 복원하는 Holistic Latent (HoLa)를 제안함.
+
+  ![](../images/2025-09-27/image-20250928231915320.png)
+
+  - VAE (conv + self-attention + cross-attention)
+    - input: curves / surfaces
+    - output: latent vector $z$
+  - Latent Diffusion Model (LDM)
+    - input
+      - condition vector ($c \in R^{256}$)
+      - latent vector $z$
+    - output
+      - curves
+      - surfaces
+
 # 3. HoLa
+
+## Overview
+
+- CAD Model
+  - $S$: Surface. $\{S_i\}_{i=1}^m$
+    - B-Spline로 표현하며, uniform sampling을 통해 ($16\times16\times3$)로 정의
+  - $C$: Curve. $\{C_i\}_{i=1}^n$
+    - B-Spline로 표현하며, uniform sampling을 통해 ($16\times3$)로 정의
+  - $V$: Vertices. $\{V_k\}_{k=1}^l$
+  - $T_{SC}$: Surface-to-Curve connections $\in \{0, 1\}, R^{m \times n}$
+    - $\{V, T_{sc}\}$를 통해 Vertice를 curve에 묶어서 표현
+  - $T_{CV}$: Curve-to-Vertices connections $\in \{0, 1\}, R^{n \times l}$
+- VAE Training
+- LDM Training
+- Post Processing
 
 # 4. Experiments
