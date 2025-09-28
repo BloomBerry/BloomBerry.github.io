@@ -1,0 +1,28 @@
+---
+title: "[B-Rep Generation] HoLa: B-Rep Generation using a Holistic Latent Representation"
+
+---
+
+
+
+# [B-Rep Generation] HoLa: B-Rep Generation using a Holistic Latent Representation
+
+- paper: https://arxiv.org/pdf/2504.14257
+- github: X
+- ACM TOG 2025 & SIGGRAPH 2025 accpeted (인용수: 2회, '25-09-27 기준)
+- Downstream task: 3D CAD B-REP (Boundary Representation)을 생성하는 task (Conditional / Unconditional)
+
+# 1. Motivation
+
+- 기존 연구들에서는 3D 물체의 표면, 경계 곡선, 그리고 topological 관계를 서로 다른 표현공간 (representation space) encoding하여 학습하였음.
+
+  - 한계점
+    - 명시적인 (Explicit) topological 제약이 없었기에 표면 $\to$ 곡선 multi step으로 생성 할 때 error accumulation 발생
+
+  $\to$ 인접하는 표면간에 접선이 경계곡선으로 표현되는 사전 지식 (inductive bias)를 바탕으로, 통합된 표현공간으로 encoding해보면 어떨까?
+
+# 2. Contribution
+
+# 3. HoLa
+
+# 4. Experiments
