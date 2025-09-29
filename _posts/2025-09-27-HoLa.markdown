@@ -53,8 +53,175 @@ title: "[B-Rep Generation] HoLa: B-Rep Generation using a Holistic Latent Repres
   - $T_{SC}$: Surface-to-Curve connections $\in \{0, 1\}, R^{m \times n}$
     - $\{V, T_{sc}\}$를 통해 Vertice를 curve에 묶어서 표현
   - $T_{CV}$: Curve-to-Vertices connections $\in \{0, 1\}, R^{n \times l}$
+
 - VAE Training
+
+  - encoder
+
+    ![](../images/2025-09-25/image-20250929164440384.png)
+
+    - input: $\{S,C,T_{SC}\}$
+
+      
+
+      ![](../images/2025-09-25/image-20250929164705023.png)
+
+      ![](../images/2025-09-25/image-20250929164809822.png)
+
+      - Downsample + CNN: $S \in R^{m \times 16 \times 16 \times 3} \to R^{m \times 32}$
+      - Downsample + CNN: $C \in R^{n \times 16 \times 3} \to R^{n \times 16}$
+      - GNN: $(R^{m \times 32}, R^{n \times 16}, \{0,1\}^{m \times n}) \to T_{SC} \in R^{m \times n}$: curve-aware feature vector ($f_{sc}$)
+      - Self-attention layer: $R^{m \times n} \to R^{m \times n}$
+      - MLP layer: $E_{mlp}: R^{m \times n} \to (R^{m \times n}, R^{m \times n})$
+
+    - output: $z_s \in R^{m \times (2\times2\times d)}$
+
+      - m: surface별 embedding
+      - 2: spatial resolution
+      - 2: direction
+      - d = 8 : feature dimension
+
+  - decoder:
+
+    ![](../images/2025-09-25/image-20250929165819729.png)
+
+    - input: : $z_s \in R^{m \times (2\times2\times d)}$
+
+    - intersection Module $\mathbb{I}: R^{(m \times 32, m \times 32)} \to (R^{16}, \{0,1\})$
+
+      - curves, vertices 를 latent space에 반영하게 하기 위해 사용
+        - Self-attention + cross-attention + MLP 통과
+          - self-attention: $R^{32} \to R^{32}$
+          - cross-attention: $(R^{32}, R^{32}) \to R^{16}$
+          - mlp: $R^{16} \to R^{16}$
+          - binary classifier: $R^{16} \to \{0,1\}$
+        - surface가 몇번째인지 positional encoding 정보 추가
+      - input: m개의 *surface latent* 쌍
+      - output: 두 surface가 접하는지 (1) 아닌지 (0) 예측
+
+    - output: $\{S,C,T_{SC}\}$
+
+      ![](../images/2025-09-25/image-20250930002810036.png)
+
+      ![](../images/2025-09-25/image-20250930002820745.png)
+
+      
+
 - LDM Training
-- Post Processing
+
+  - input
+    - Conditions: $c \in R^{256}$
+    - Latent embedding  $z_s \in R^{m \times (2\times2\times d)}$
+
+  - Output: $\{S,C,T_{SC}\}$
+
+- Loss
+
+  ![](../images/2025-09-25/image-20250930002902663.png)
+
+  ![](../images/2025-09-25/image-20250930002919589.png)
+
+- Half-Curvature
+
+  ![](../images/2025-09-25/image-20250930003339171.png)
+
+  - $16 \times 3$로 curve를 uniform sampling하는 과정에서 curve의 방향이 고정되어, 임의로 방향이 지정됨 $\to$ 이는 학습을 robust하지 못하게 함
+  - L1 loss대신 Chamfer distance 을 적용 (inner hole: clock-wise loop, outer hole: counter-clock wise)
+
+- (Conditional) Generation
+
+  ![](../images/2025-09-25/image-20250930003355063.png)
+
+  - condition을 latent와 함께 부여하여 복원
+
+    ![](../images/2025-09-25/image-20250930003415813.png)
+
+    ![](../images/2025-09-25/image-20250930003437927.png)
+
+    - image: dinov2 embedding (1024d) $\to$ MLP (256d)
+      - 학습할 때 freeze
+    - point clouds: PointNet
+      - 학습할때 unfreeze
+
+- Post-process
+
+  - Intersection module + Decoder 통과 후, embedding은 BSpline을 통해 sample points를 surface, curves로 복원
 
 # 4. Experiments
+
+- Dataset
+  - DeepCAD dataset
+    - 7 ~ 30 surfaces를 갖는 models만 활용
+      - Train: 47,284
+      - val: 3,517
+      - test: 2,424
+- Evaluation Metrics
+  - Validity ($\uparrow$): 전체 생성된 samples중 유효한 samples의 비율
+  - Average Light Field Distance (LFD) ($\uparrow$): light field distance를 기반으로 생성된 sample의 "novelty"를 평가함. 얼마나 training set 기준 overfitting이 덜되었는지 평가
+  - Coverage ($\uparrow$): 생성된 samples로 cover되는 test-set의 비율. Chamfer Distance (CD)기반으로 closest neighbor를 선정
+  - Jensen-Shannon Divergence (JSD) ($\downarrow$): 생성된 samples와 test set의 분포 차이 ($28^3$ voxel point cloud로 표현)
+  - Maximum-Mean Discrepancy (MMD) ($\downarrow$): 생성된 sample과 nearest neighbor로 mapping된 test-set의 평균 CD 거리
+  - Cyclomatic Complexity (CC) ($\uparrow$): 생성된 sample의 wireframe graph 표현 에 존재하는 loop의 수. 복잡도를 표현
+  - Mean curvature (MC) ($\uparrow$): 생성된 samples의 averaged mean curvature
+
+- 정량적 결과
+
+  ![](../images/2025-09-25/image-20250930004650605.png)
+
+- 정성적 결과
+
+  ![](../images/2025-09-25/image-20250930004713421.png)
+
+- Unconditional Generation 결과
+
+  ![](../images/2025-09-25/image-20250930004736579.png)
+
+  ![](../images/2025-09-25/image-20250930004748099.png)
+
+  ![](../images/2025-09-25/image-20250930004804325.png)
+
+- Conditional Generation 
+
+  - 정량적 결과
+
+    ![](../images/2025-09-25/image-20250930004825477.png)
+
+    ![](../images/2025-09-25/image-20250930004909587.png)
+
+    ![](../images/2025-09-25/image-20250930005058401.png)
+
+  - 정성적 결과
+
+    ![](../images/2025-09-25/image-20250930004852123.png)
+
+    ![](../images/2025-09-25/image-20250930005005264.png)
+
+    ![](../images/2025-09-25/image-20250930004920058.png)
+
+    ![](../images/2025-09-25/image-20250930005142076.png)
+
+    ![](../images/2025-09-25/image-20250930005151577.png)
+
+    ![](../images/2025-09-25/image-20250930005202113.png)
+
+- 실패 사례
+
+  ![](../images/2025-09-25/image-20250930004940999.png)
+
+  ![](../images/2025-09-25/image-20250930005022153.png)
+
+- Out-of-Distribution 사례
+
+  ![](../images/2025-09-25/image-20250930005119554.png)
+
+- Ablation Studies
+
+  - SA / SR / HE 유무에 따른 분석
+
+    ![](../images/2025-09-25/image-20250930005043166.png)
+
+  - 반복 횟수에 따른 비교
+
+    ![](../images/2025-09-25/image-20250930005308202.png)
+
+    ![](../images/2025-09-25/image-20250930005251739.png)
