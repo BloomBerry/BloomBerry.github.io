@@ -116,7 +116,49 @@ $(q, d^+,D^-)$
 
 - Seed Data: expert-curated seed data기반으로 persona-based syntehtic data 를 생성
   - 시장 분석, 투자 전략, 회사 재무 상태 등
+
 - Persona-based Data Augmentation
-  - 
+  - Qwen2.5-14B-Instruct를 사용하여 *"Who is linkely to use this text?"*로 질문하여 구체적인 페르소나 묘사를 생성함
+
+  - 업종 관련된 task를 capture하여 persona를 생성함
+
+    ![](../images/2025-09-25/image-20251013144021217.png)
+
+- Contextual Query Generation
+
+  - Qwen2.5-72B-Instruct를 활용하여 *Guess a prompt (i.e., instructions) that the follwoing persona may ask you to do:*로 질문하여 "context"를 생성함
+
+  - 외부 document를 요구하는 queries를 필터링함 $\to$ "contextual query"
+
+  - (query *q*, positive document $d^+$) 를 만듦
+
+    ![](../images/2025-09-25/image-20251013144312493.png)
+
+- Synthetic Positive Document ($d^+$) Generation
+
+  - Qwe2.5-VL-72B-Instruct를 통해 위 과정에서 생성 & 선별된 contextual query *q*를 가지고 "Synthesize context information related to this question: [Insert query q here]"로 연관된 positive financial document $d^+$를 생성
+
+    ![](../images/2025-09-25/image-20251013144530395.png)
+
+    
+
+
+### Training Pipeline
+
+- (*q*, $d^+$, $D^-$) pair기반 contrastive learning으로 학습
+  - $D^-$: Hard negatives. 잠재적으로 query $q$와 연관되었으나, positive하지 않는 문서들. all-MiniLM-L12-v2를 통해 mining 수행하여 query *q*와 유사한 문서를 추출한 후 $d^+$와 distinct한 문서를 listup함
+- e5-mistral-7b-instruct와 동일한 training recipe 활용
+  - last token polling method
 
 # 4. Experiments
+
+- Evaluation Models
+
+  - Bag-fo-Words (BoW): word freqeuncy기반 sparse vector로 text representation을 설명
+  - Encoder-based: classical Bert, FinBERT, msmarco-bert-base-dot-v5, all-MiniLML12-v2, age-large-en-v1.5, AnglEBERT
+  - LLM-based: Mistral-7B-based, e5-mistral-7b-instruct, NV-Embed-v2, gte-Qwen1.5-7B-instruct
+  - Commercial Models: OpenAI's text-embeddings, voyage-3-large
+
+- 정량적 결과
+
+  ![](../images/2025-09-25/image-20251013151949450.png)
