@@ -11,7 +11,7 @@ title: "[IR] GraphFormers: GNN-nested Transformers for Representation Learning o
 - NeurIPS 2021 accepted (인용수: 245회, '25-10-21 기준)
 - downstream task: WIKI, 논문 인용 여부, Shopping 목록 link예측 task
 
-# 1. Motivation
+1. Motivation
 
 - textual graph를 이해하는 모델로 최근에 PLM (Pretrained Language Model)과 GNN (Graph Neural Network)를 cascaded하는 방식의 연구가 진행되고 있다.
 
