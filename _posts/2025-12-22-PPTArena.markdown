@@ -1,0 +1,17 @@
+# [Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing
+
+-  paper: https://arxiv.org/pdf/2512.03042
+- github: https://github.com/michaelofengend/PPTArena
+- archived (인용수: 0회, '25-12-22 기준)
+- downstream task: PPT Agent benchmark
+
+1. Motivation
+
+- Image/PDF 기반의 task는 템플릿(deck)의 semantics(formats, placeholders, shape trees?)을 고려하지 않음 $\to$ 편집기반의 태생적 차이가 from scratch에서 시작하는것과 존재함
+- *최신 Multimodal agents가 고품질로 instruction-following & visual quality의 창작물을 생성할 수 있을까?*
+
+# 2. Contribution
+
+# 3. PPTArena
+
+# 4. Experiments
