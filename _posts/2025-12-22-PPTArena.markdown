@@ -12,6 +12,36 @@
 
 # 2. Contribution
 
+- PPT editing을 템플릿 내의 구조적 & 인과관계로 정의한 최초의 benchmark인 **PPTArena**를 제안함
+  - 최초의 ppt 템플릿 기반의 benchmark (Target 템플릿별 정답을 제공)
+  - single/multi edit tasks로 구성됨. (ex. cross-slide consistency, structural grounding, etc) (Error 지시문을 제공)
+  - element-level의 정답지를 제공 && Dual VLM-as-a-judge 활용
+    - Instruction Following (IF) checker
+    - Visual Quality (VQ) checker
+- Structure-aware Robust & Fine-grained PPT agent인 **PPT-Pillot**를 제안함
+  - Structure-aware?
+    - 전체 템플릿 내 정보들 (ex. 슬라이드 마스터, placeholder, shape trees, texts, etc)을 파싱하고, 이를 고려하여 계획을 세움
+      - 대상을 식별하여 instruction ("subtitle을 xxx로 바꿔줘")을 이해함
+  - Robust?
+    - 반복적인 plan-edit-refine loop
+  - Fine-grained? 
+    - dual operations(tools)를 사용 $\to$ user의 instruction에 따라 알맞은 tool이 호출
+      - high-level APIs (`python-pptx`): global한 편집에 적합 (ex. 번역, 일괄 정규화)
+      - direct XML patching: local한 편집에 적합 (ex. font, color, theme color, position)
+- 다양한 상용 모델들 & ppt-agent들로 경험적인 실험을 진행함
+
 # 3. PPTArena
 
-# 4. Experiments
+## 3.1 Benchmark Composition & Difficulty
+
+- 2,125개의 slides에서 추출한 100개의 real-world editing task로 구성
+
+## 3.2 Comparison with Prior Benchmarks
+
+## 3.3 VLM-as-Judge Evaluation Protocol
+
+# 4. An Effective PPT Editing Agent: PPTPilot
+
+
+
+# 5. Experiments
