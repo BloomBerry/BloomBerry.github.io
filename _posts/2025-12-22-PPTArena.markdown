@@ -36,12 +36,119 @@
 
 - 2,125개의 slides에서 추출한 100개의 real-world editing task로 구성
 
+-  15K powerpoint (SlidesCarnival, Zenodo, SlideShare, etc)로부터 pptx파일을 다운
+
+- structured JSON형태로 layout, styling, content metadata를 추출
+
+- 다양한 유형의 멀티모달 assets (ex. tables, etc)이 있고, 다양한 주제를 커버하도록 수동으로 리뷰
+
+  ![](../images/2025-11-28/image-20251229190432446.png)
+
+- 단순한 text 수정부터 multi-edit, multimodal reasoning까지 다룸
+
+  ![](../images/2025-11-28/image-20251229214059293.png)
+
+  - multi step reasoning depth
+  - cross-slide dependecies
+  - semantic understanding requirements
+  - Long-horizon planning complexity
+
+  ![](../images/2025-11-28/image-20251229190525042.png)
+
 ## 3.2 Comparison with Prior Benchmarks
+
+![](../images/2025-11-28/image-20251229190639787.png)
+
+- human-created + synthetically generated 템플릿으로 구성됨.
+
+- GT를 제공함
+
+- cross platform compatibility를 유지해야함
+
+  ![](../images/2025-11-28/image-20251229190936682.png)
+
+
 
 ## 3.3 VLM-as-Judge Evaluation Protocol
 
+- Instruction Following
+  - agent가 user prompt를 얼마나 논리적으로 따르는지 평가함
+- Visual Quality
+  - 심미적 아름다움을 평가함 (layout, alignment, typography, color harmony, 전반적 visual appeal)
+
+### 3.3.1 Per-sample Rubric: style target
+
+- PPT는 각각의 개성이 뚜렷해서 일관된 정답을 제공하지 못함 $\to$ sample별 target GT를 제공해야함.
+- auto generation + exhaustive human verification(노가다)을 통해 target을 완성함. 
+
+### 3.3.2 Dual-Judge Pipeline for Reliable Evaluation
+
+- Insturction Follwoing Judge
+  - input: structured data diffs (Json / XML Summaries) b/w original & prediction slides $\to$ Judge가 content level의 차이에 집중하도록 함
+- Visual Quality Judge
+  - input: screenshot image of predicted & GT slides $\to$ 시각적 심미성(style, alignment, layout, etc)를 평가하기 위함
+
 # 4. An Effective PPT Editing Agent: PPTPilot
 
+- Dual path Architecture
 
+  ![](../images/2025-11-28/image-20251229193257017.png)
+
+  - Skill Routing
+    - user instruction, screenshot, content를 고려하여 Direct XML edit/programmic tool중 1개를 선별
+    - 경량 모델 활용 (ex. GPT-5 nano, Gemini-2.5-flash)
+
+  - Direct XML editing
+
+    - raw OOXML를 기반으로 read/parse/re-write 작업 수행
+
+    - 장점: fine-grained 속성 변경 가능
+
+      ex. speific position 변경
+
+    - 단점: long context & strict format이 precise edit하는데 어려움이 있음
+
+  - programmatic tools
+
+    - `python-pptx` library를 활용
+
+      - 장점: 전체 slide에 동일한 행위 적용하는데 유리
+
+        ex. "find-and-replace"
+
+      - 단점: fine-grained 속성 변경에 어려움
+
+  - Self-correction with Reflection
+
+    - output PPT를 instruction기반으로 평가하여 failures에 대해 feeback를 제공함
+    - 강력학 상용모델 활용 (GPT-5, Gemini 2.5 Pro)
 
 # 5. Experiments
+
+- Subset Evaluation
+
+  - 전체 100개를 평가하는데 비용이 많이 들어 25개만 가지고 간이 평가 (20개: hardest task + 5개 수동 선택 $\to$ 다양성)
+
+- 정량적 결과
+
+  - ChatGPT agent
+
+    ![](../images/2025-11-28/image-20251229213737686.png)
+
+    - 내용 수정, 가벼운 styling adjustment는 잘했으나, **visual-text alignment** 요구하거나, **cross-slide** reasoning, 그리고 **템플릿 내 구조 제약**을 유지하는데 취약
+    - 단순한 `python-pptx` 기능 이상의 시나리오에서 30분 이상 멈춤
+
+- 정성적 결과
+
+  - Failure case
+
+    ![](../images/2025-11-28/image-20251229214147096.png)
+
+- Ablation Studies
+
+  ![](../images/2025-11-28/image-20251229213751455.png)
+
+  - XML-only: `python-pptx` library 미사용
+  - `python-pptx`-only: XML 수정 불가
+  - Hybrid (no-refinement): 수정과정 없이.
+
