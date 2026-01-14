@@ -1,3 +1,9 @@
+---
+title: "[UI2Code] ScreenCoder: Advancing Visual-to-Code Generation      for Front-End Automation Via Modular Multimodal Agents"
+---
+
+
+
 # [UI2Code] ScreenCoder: Advancing Visual-to-Code Generation      for Front-End Automation Via Modular Multimodal Agents
 
 - paper: https://arxiv.org/pdf/2507.22827
