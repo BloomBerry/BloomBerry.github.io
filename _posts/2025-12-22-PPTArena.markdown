@@ -116,9 +116,23 @@ title: "[Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing"
 
   - 80개: real world deck 
     - 전문 annotator가 수동으로 편집하여 GT를 만듦. (1개당 평균 2시간 == 160시간)
-  
+
   - 20개: synthetically created deck
-  
+
+
+### 난이도 높은 예시
+
+1. Multi-Step Reasoning Depth (5-depth)
+
+   ![](../images/2025-11-28/image-20260116020546840.png)
+
+   - 전체 slide에 global theme 적용
+   - image내 데이터 추출 및 image-to-chart 변환 
+   - 특정 slide에서 layout 최적화
+   - 위치 계산을 기반으로 progress bar를 Programic하게 생성
+   - 수집된 reference를 바탕으로 bibliography를 생성
+
+   
 
 
 
@@ -151,7 +165,7 @@ title: "[Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing"
 ![](../images/2025-11-28/image-20260116010827326.png)
 
 - Insturction Follwoing Judge
-  - input: structured data diffs (Json / XML Summaries) b/w original & prediction & GT slides $\to$ Judge가 content level의 차이에 집중하도록 함
+  - input: user query + style target + structured data diffs (Json / XML Summaries) b/w original & prediction & GT slides $\to$ Judge가 content level의 차이에 집중하도록 함
   
     - diff json 생성 프롬프트![](../images/2025-11-28/image-20260116015035181.png)
   
@@ -162,7 +176,7 @@ title: "[Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing"
   - 이미지는 안본다.
   
 - Visual Quality Judge
-  - input: screenshot image of original & predicted & GT slides $\to$ 시각적 심미성(style, alignment, layout, etc)를 평가하기 위함
+  - input: user query + style target + screenshot image of original & predicted & GT slides $\to$ 시각적 심미성(style, alignment, layout, etc)를 평가하기 위함
   
   - 시각적인 변화가 큰 경우에만 visual judge를 작동시킴으로써 편집한 부분에 집중하도록 하며, 방대한 컨택스트에 압도되지 않도록 함
   
@@ -184,29 +198,30 @@ title: "[Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing"
   - Skill Routing
     - user instruction, screenshot, content를 고려하여 Direct XML edit/programmic tool중 1개를 선별
     - 경량 모델 활용 (ex. GPT-5 nano, Gemini-2.5-flash)
-
+    - In-Context Example 부여
+    
   - Direct XML editing
-
+  
     - raw OOXML를 기반으로 read/parse/re-write 작업 수행
-
+  
     - 장점: fine-grained 속성 변경 가능
-
+  
       ex. speific position 변경
-
+  
     - 단점: long context & strict format이 precise edit하는데 어려움이 있음
-
+  
   - programmatic tools
-
+  
     - `python-pptx` library를 활용
-
+  
       - 장점: 전체 slide에 동일한 행위 적용하는데 유리
-
-        ex. "find-and-replace"
-
+  
+        ex. "find-and-replace", "slide creation", "translation", "summarization"
+  
       - 단점: fine-grained 속성 변경에 어려움
-
+  
   - Self-correction with Reflection
-
+  
     - output PPT를 instruction기반으로 평가하여 failures에 대해 feeback를 제공함 (ReACT 채택)
     - 강력학 상용모델 활용 (GPT-5, Gemini 2.5 Pro)
 
@@ -238,6 +253,12 @@ title: "[Agent] PPTArena: A Benchmark for Agentic PowerPoint Editing"
   - Failure case
 
     ![](../images/2025-11-28/image-20251229214147096.png)
+
+    - ChatGPT는 사람의 얼굴 crop을 못하고, 파란 circle만 넣음
+
+  - Success case
+
+    ![](../images/2025-11-28/image-20260116022629694.png)
 
 - Ablation Studies
 
