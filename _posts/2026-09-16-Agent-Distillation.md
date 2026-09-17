@@ -1,6 +1,4 @@
----
 title: "[Agent] Agent Distillation: CoT가 아니라 '행동'을 증류해서 0.5B 모델을 도구 쓰는 에이전트로 만들기"
----
 
 
 
@@ -8,7 +6,7 @@ title: "[Agent] Agent Distillation: CoT가 아니라 '행동'을 증류해서 0.
 
 - paper: https://arxiv.org/pdf/2505.17612 (Distilling LLM Agent into Small Models with Retrieval and Code Tools)
 - github: https://github.com/Nardien/agent-distillation
-- NeurIPS 2025 accepted (arXiv v2, '25-11-05)
+- NeurIPS 2025 accepted (인용수: 43회, '26-09-17 기준, Oral)
 - 저자: KAIST / University of Wisconsin-Madison / KRAFTON / DeepAuto.ai (Minki Kang, Jongwon Jeong, Seanie Lee, Jaewoong Cho, Sung Ju Hwang)
 - downstream task: tool-using small agent (retrieval + code interpreter)
   - factual reasoning 4종 (HotpotQA, Bamboogle, MuSiQue, 2WikiMultiHopQA) + math reasoning 4종 (MATH500, GSM-Hard, AIME, OlymMATH)
@@ -33,13 +31,16 @@ title: "[Agent] Agent Distillation: CoT가 아니라 '행동'을 증류해서 0.
   - 주가 히스토리(사실) + split 반영 산술(계산)이 둘 다 필요함
   - LLM은 암기된 지식 + 수치 능력으로 CoT만으로 풀 수 있지만, 이 trace를 sLM에 그대로 증류해도 **학습 때 못 본 새 종목/새 수치에는 일반화되지 않음**
 
-  figure2 첨부 (CoT distillation vs agent distillation 개념 비교 — CoT 학생은 Nvidia 질문에서 사실·계산을 동시에 틀리고, agent 학생은 검색 쿼리를 새로 만들고 코드로 계산)
+  ![](../images/2026-09-15/image-20260917150849495.png)
+
+  CoT distillation vs agent distillation 개념 비교 — CoT 학생은 Nvidia 질문에서 사실·계산을 동시에 틀리고, agent 학생은 **검색 쿼리**를 새로 만들고 **코드**로 계산
 
 - $\to$ (Research Question) 지식·계산을 **암기**시키는 대신, retrieval과 code tool을 쓰는 **행동 자체**를 30B급 teacher agent에서 0.5~3B student로 증류할 수 있는가?
 
 # 2. Contribution
 
-- **Agent Distillation** 제안: teacher LLM agent의 reason-act-observe trajectory로 sLM을 fine-tuning 하는 프레임워크
+- **Agent Distillation** 제안: teacher LLM agent의 **reason-act-observe trajectory**로 sLM을 fine-tuning 하는 프레임워크
+  
   - 학생은 사실/계산을 외우는 게 아니라 **도구로 푸는 법**을 배움 $\to$ 못 본 쿼리·계산에 일반화됨
 - naive distillation의 두 한계를 겨냥한 보조 기법 2개
   - **first-thought prefix (FTP)**: teacher trajectory 품질 개선 (teacher 추가 학습 없이 프롬프트만으로)
@@ -47,7 +48,9 @@ title: "[Agent] Agent Distillation: CoT가 아니라 '행동'을 증류해서 0.
 - 8개 벤치마크(factual 4 + math 4), student 0.5B~7B 전 스케일에서 CoT distillation 대비 일관된 향상
 - 핵심 주장: **agent distillation된 모델이 2~4배 큰 CoT distillation 모델과 맞먹음**
 
-  figure1 첨부 (모델 크기별 5개 세팅 평균 정확도 — 0.5B/1.5B/3B/7B/32B teacher)
+  ![](../images/2026-09-15/image-20260917153629395.png)
+  
+  모델 크기별 5개 세팅 평균 정확도 — 0.5B/1.5B/3B/7B/32B teacher
 
 # 3. Related Works
 
@@ -94,7 +97,7 @@ title: "[Agent] Agent Distillation: CoT가 아니라 '행동'을 증류해서 0.
 
 ## 5.3 First-thought prefix (FTP)
 
-figure3 첨부 ((a) First-thought Prefix, (b) Self-consistent Action Generation 도식)
+![](../images/2026-09-15/image-20260917155239420.png) ((a) First-thought Prefix, (b) Self-consistent Action Generation 도식)
 
 - 관찰: Qwen2.5-32B-Instruct 조차 **agent로 쓰면 MATH500 어려운 문제에서 CoT 프롬프트보다 성능이 떨어짐** (Section D.1)
   - 가설: instruction-tuned 모델은 이미 CoT로 푸는 데 최적화돼 있는데, agent instruction이 그 추론 패턴과 충돌해 **distributional drift**를 일으킴
@@ -119,7 +122,9 @@ figure3 첨부 ((a) First-thought Prefix, (b) Self-consistent Action Generation 
 
 ## 6.1 Setup
 
-table1 첨부 (태스크 분류 — in-domain / out-of-domain, 데이터셋별 test size)
+<img src="../images/2026-09-15/image-20260917155259166.png" style="zoom:50%;" /> 
+
+태스크 분류 — in-domain / out-of-domain, 데이터셋별 test size
 
 - **Tasks**: factual은 HotpotQA(in-domain, 500) / Bamboogle(125) / MuSiQue(500) / 2WikiMultiHopQA(500), math는 MATH500(in-domain) / GSM-Hard(500) / AIME(90) / OlymMATH(200)
   - 학습은 HotpotQA 1,000개 + MATH 2,000개만 사용
@@ -131,7 +136,7 @@ table1 첨부 (태스크 분류 — in-domain / out-of-domain, 데이터셋별 t
 
 ## 6.2 Main results
 
-table2 첨부 (8개 벤치마크 × 5개 모델 크기 메인 결과)
+![](../images/2026-09-15/image-20260917155338332.png) (8개 벤치마크 × 5개 모델 크기 메인 결과)
 
 - 평균 점수 요약 (Avg. 컬럼)
 
@@ -158,7 +163,7 @@ table2 첨부 (8개 벤치마크 × 5개 모델 크기 메인 결과)
 
 **(1) Code-specific 모델은 teacher 쪽에서만 약간 이득**
 
-table3 첨부 (general vs code-specific teacher/student 조합 비교)
+![](../images/2026-09-15/image-20260917155357023.png) (general vs code-specific teacher/student 조합 비교)
 
 | Teacher | Student | Avg. |
 | --- | --- | --- |
@@ -172,7 +177,7 @@ table3 첨부 (general vs code-specific teacher/student 조합 비교)
 
 **(2) 다른 모델 패밀리에도 적용됨**
 
-table4 첨부 (Llama-3.2-1B-Instruct, Phi-4-mini-instruct 결과)
+![](../images/2026-09-15/image-20260917155425937.png) (Llama-3.2-1B-Instruct, Phi-4-mini-instruct 결과)
 
 | Student | CoT Prompting | CoT Distill | Agent (FT) | + FTP | + FTP&SAG |
 | --- | --- | --- | --- | --- | --- |
@@ -183,7 +188,7 @@ table4 첨부 (Llama-3.2-1B-Instruct, Phi-4-mini-instruct 결과)
 
 **(3) FTP는 어려운 문제에서 효과**
 
-figure4 첨부 (3B 모델의 MATH subcategory별 / 난이도 level별 정확도 — CoT vs Agent vs Agent+FTP)
+![](../images/2026-09-15/image-20260917155440141.png) (3B 모델의 MATH subcategory별 / 난이도 level별 정확도 — CoT vs Agent vs Agent+FTP)
 
 - naive agent distillation은 3B의 MATH500 성능을 대부분의 level에서 떨어뜨림
 - FTP를 쓴 teacher trajectory로 학습하면 **level 4, 5에서 특히 크게 개선** $\to$ AIME에서의 향상과 같은 경향
@@ -191,28 +196,36 @@ figure4 첨부 (3B 모델의 MATH subcategory별 / 난이도 level별 정확도 
 
 **(4) SAG vs CoT self-consistency**
 
-figure5 첨부 (샘플 수 $n$ 에 따른 agent+SAG vs CoT+self-consistency, 3B 모델)
+![](../images/2026-09-15/image-20260917155453566.png) 
+
+(샘플 수 $n$ 에 따른 agent+SAG vs CoT+self-consistency, 3B 모델)
 
 - 같은 연산 예산에서 CoT에 self-consistency를 붙이면 MATH에서는 CoT가 앞섬
 - 그러나 **더 어려운 AIME에서는 agent+SAG가 여전히 우위**, HotpotQA·MuSiQue 같은 factual 태스크에서는 self-consistency 이득이 미미함
 
 **(5) SAG는 invalid code action을 실제로 줄임**
 
-figure7 첨부 (MATH / GSM-Hard / AIME에서 SAG 유무에 따른 code parse·execution error rate)
+![](../images/2026-09-15/image-20260917155514639.png)
+
+(MATH / GSM-Hard / AIME에서 SAG 유무에 따른 code parse·execution error rate)
 
 - 모델이 작을수록(0.5B) 유효한 코드를 만들 확률이 떨어지는데, SAG가 이를 뚜렷이 완화함. AIME에서 효과가 가장 큼
 - 단 execution error가 0이 되진 않고, 남은 건 에러 메시지를 observation으로 받아 다음 턴에서 수정
 
 **(6) 토큰 비용은 크게 늘지 않음**
 
-figure6 첨부 (3B 모델의 CoT vs Agent 생성 토큰 수 분포)
+![](../images/2026-09-15/image-20260917155531074.png)
+
+ (3B 모델의 CoT vs Agent 생성 토큰 수 분포)
 
 - factual: agent가 더 씀 (HotpotQA 179.3 $\to$ 267.1, MuSiQue 231.0 $\to$ 390.2) — 여러 번 검색하느라
 - math: **agent가 더 적게 씀** (MATH 591.3 $\to$ 486.3, AIME 1022.5 $\to$ 885.8) — 반복 계산을 for-loop 같은 코드에 위임
 
 **(7) FTP는 검색 호출을 줄인다 (양날의 검)**
 
-figure8 첨부 (모델 크기·데이터셋별 평균 retrieval tool 호출 횟수, FTP 유무)
+![](../images/2026-09-15/image-20260917155542524.png)
+
+ (모델 크기·데이터셋별 평균 retrieval tool 호출 횟수, FTP 유무)
 
 - 큰 모델일수록 검색을 더 많이 부름. 작은 모델은 처음 가져온 문서에 과의존해 재검색을 안 함
 - FTP를 쓰면 검색 호출이 **줄어듦** $\to$ Bamboogle은 개선되지만 HotpotQA·MuSiQue는 엇갈림
