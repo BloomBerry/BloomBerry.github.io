@@ -1,0 +1,81 @@
+#!/bin/bash
+# Compress newly staged PNGs before they enter history.
+#
+# Same recipe as commit 384f9831: quantize to a 256-color palette, but keep the
+# original whenever the result would be perceptibly worse (PSNR < MIN_PSNR) or
+# not actually smaller. Gradient-heavy figures (heatmaps, photos) band badly
+# under quantization and are left untouched by the gate.
+#
+# Enabled via: git config core.hooksPath .githooks
+
+set -uo pipefail
+
+MIN_PSNR=${PNG_MIN_PSNR:-40}
+JOBS=${PNG_JOBS:-8}
+
+# Escape hatch: SKIP_PNG_COMPRESS=1 git commit ...
+if [ "${SKIP_PNG_COMPRESS:-0}" = "1" ]; then
+  exit 0
+fi
+
+if ! command -v magick >/dev/null 2>&1; then
+  echo "pre-commit: ImageMagick(magick)이 없어 PNG 압축을 건너뜁니다." >&2
+  exit 0
+fi
+
+tmpdir=$(mktemp -d) || exit 0
+trap 'rm -rf "$tmpdir"' EXIT
+
+# Staged added/modified PNGs, NUL-delimited (filenames may contain spaces).
+git diff --cached --name-only --diff-filter=AM -z -- '*.png' '*.PNG' > "$tmpdir/staged" || exit 0
+[ -s "$tmpdir/staged" ] || exit 0
+
+filesize() { stat -f%z "$1" 2>/dev/null || stat -c%s "$1" 2>/dev/null; }
+export -f filesize
+
+cat > "$tmpdir/one.sh" <<'WORKER'
+f="$1"; tmpdir="$2"; min_psnr="$3"
+filesize() { stat -f%z "$1" 2>/dev/null || stat -c%s "$1" 2>/dev/null; }
+[ -f "$f" ] || exit 0
+# Skip if the worktree copy differs from what is staged; compressing it would
+# silently stage unrelated unstaged edits.
+if ! git diff --quiet -- "$f"; then
+  printf 'DIRTY\t0\t0\t0\t%s\n' "$f"; exit 0
+fi
+o=$(filesize "$f") || exit 0
+t="$tmpdir/$$.$RANDOM.png"
+if ! magick "$f" -colors 256 -define png:compression-level=9 -strip "$t" 2>/dev/null; then
+  rm -f "$t"; printf 'ERR\t%s\t0\t0\t%s\n' "$o" "$f"; exit 0
+fi
+q=$(filesize "$t"); [ "${q:-0}" -gt 0 ] || { rm -f "$t"; printf 'ERR\t%s\t0\t0\t%s\n' "$o" "$f"; exit 0; }
+p=$(magick compare -metric PSNR "$f" "$t" null: 2>&1 | awk '{print $1+0}')
+if [ "$q" -lt "$o" ] && awk -v p="$p" -v m="$min_psnr" 'BEGIN{exit !(p>=m)}'; then
+  mv "$t" "$f"; printf 'OK\t%s\t%s\t%s\t%s\n' "$o" "$q" "$p" "$f"
+else
+  rm -f "$t"; printf 'KEEP\t%s\t%s\t%s\t%s\n' "$o" "$q" "$p" "$f"
+fi
+WORKER
+chmod +x "$tmpdir/one.sh"
+
+xargs -0 -P "$JOBS" -I{} bash "$tmpdir/one.sh" {} "$tmpdir" "$MIN_PSNR" \
+  < "$tmpdir/staged" > "$tmpdir/result" 2>/dev/null
+
+# Re-stage whatever was rewritten.
+awk -F'\t' '$1=="OK"{print $5}' "$tmpdir/result" | tr '\n' '\0' > "$tmpdir/changed"
+if [ -s "$tmpdir/changed" ]; then
+  xargs -0 git add -- < "$tmpdir/changed" || true
+fi
+
+awk -F'\t' -v m="$MIN_PSNR" '
+  $1=="OK"   {n++; so+=$2; sq+=$3}
+  $1=="KEEP" {k++}
+  $1=="DIRTY"{d++; dirty=dirty sprintf("    %s\n",$5)}
+  $1=="ERR"  {e++}
+  END {
+    if (n) printf "pre-commit: PNG %d장 압축 (%.1f MB -> %.1f MB, -%d%%)\n", n, so/1048576, sq/1048576, (so-sq)*100/so
+    if (k) printf "pre-commit: %d장은 원본 유지 (PSNR < %s dB 또는 압축 효과 없음)\n", k, m
+    if (d) { printf "pre-commit: %d장은 unstaged 변경이 있어 건너뜀\n", d; printf "%s", dirty }
+    if (e) printf "pre-commit: %d장 처리 실패 (원본 유지)\n", e
+  }' "$tmpdir/result"
+
+exit 0
