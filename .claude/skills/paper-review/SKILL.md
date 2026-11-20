@@ -17,13 +17,35 @@ Turn a paper URL into a Korean review saved as a Jekyll `_post` in this repo.
    - **Always then `Read` that saved PDF path with `pages: "1-N"`** to get the real content (title, authors, numbers, tables, figures). Do not write the review off the WebFetch summary alone — verify the actual title and every number against the PDF pages.
    - If the arXiv number in the request resolves to a different paper than the user named, note the real title in your final reply.
 
-2. **Extract the essentials** from the PDF: title, authors/affiliation, venue/date, the task, motivation, contributions, method, key benchmark numbers, ablations, limitations. Locate every numbered Table and Figure and what each shows.
+2. **Extract the essentials** from the PDF: title, authors/affiliation, date, the task, motivation, contributions, method, key benchmark numbers, ablations, limitations. Locate every numbered Table and Figure and what each shows.
 
-3. **Write the post** to `_posts/YYYY-MM-DD-<Slug>.md`:
+3. **Resolve the venue; never fill in the citation count.** The PDF almost never states acceptance (a camera-ready header is the only exception — "Preprint" is not one), and it never states citations.
+
+   **Venue** — look it up, do not guess:
+
+   ```bash
+   # venue (429s are common — retry up to 3x with a 3s sleep)
+   curl -s "https://api.semanticscholar.org/graph/v1/paper/arXiv:<id>?fields=title,venue,year,publicationVenue"
+   # acceptance note + submission date (arxiv:comment / arxiv:journal_ref)
+   curl -sL "https://export.arxiv.org/api/query?id_list=<id>"
+   ```
+
+   - Confirm the returned `title` matches the PDF before trusting the row — a wrong-ID match silently yields someone else's metadata.
+   - `venue` non-empty on Semantic Scholar, or an `arxiv:comment` saying "Accepted at X" → `<Venue> accepted`.
+   - Both empty → it is a preprint → `arXiv preprint`. Do **not** invent a venue.
+   - Both APIs unreachable → `<TODO: venue 확인 필요>`.
+
+   **Citation count** — always leave it as a TODO:
+
+   - The house number comes from **Google Scholar**, which cannot be queried from here (`scholar.google.com` returns HTTP 403). Semantic Scholar's `citationCount` indexes a different corpus and routinely disagrees with it, so it must not be substituted in.
+   - Always write the line as `- <Venue> accepted (인용수: <TODO>회, 'YY-MM-DD 기준)` — today's date as the 기준 date, `<TODO>` left verbatim for the user to replace from Google Scholar.
+   - Say in your final report that the citation count is left as a TODO.
+
+4. **Write the post** to `_posts/YYYY-MM-DD-<Slug>.md`:
    - `YYYY-MM-DD` = today's date. `<Slug>` = short paper name (e.g. `Ministral-3`).
    - Follow the format spec below exactly.
 
-4. **Report** the file path and a 3-5 line summary of the paper. List how many table/figure placeholders were inserted.
+5. **Report** the file path and a 3-5 line summary of the paper. List how many table/figure placeholders were inserted, and state where the venue came from (Semantic Scholar / arXiv comment / preprint), and remind the user that 인용수 is left as `<TODO>` for them to fill from Google Scholar.
 
 ## Format spec (match existing posts)
 
@@ -42,7 +64,7 @@ Look at a recent post such as `_posts/2026-09-11-EDGE-KOPA.md` for tone before w
 - **Header block** repeats the H1 title, then a metadata bullet list:
   - `- paper: <url>`
   - other links if present (`- github:`, `- webpage:`, `- models:`)
-  - venue / license / date / citation count if known
+  - the venue / 인용수 line built in step 3 — venue looked up, 인용수 left as `<TODO>`
   - `- 저자: ...`
   - `- downstream task: ...`
   - `- 주요 용어` — a sub-list defining 3-5 key terms the paper coins, each with a crisp Korean definition. Use LaTeX (`$...$`, `$$...$$`) for notation.
