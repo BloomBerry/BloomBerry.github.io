@@ -8,7 +8,7 @@ title: "[Agent] SwizzlePerf: Hardware-Aware LLM으로 GPU Kernel의 Cache Locali
 
 - paper: https://arxiv.org/pdf/2508.20258
 - github (base framework, IntelliPerf): https://github.com/AMDResearch/intelliperf
-- NeurIPS 2026 accepted (인용수: 21회, 26-11-19 기준)
+- NeurIPS 2025 accepted (인용수: 21회, 26-11-19 기준)
 - 저자: Harvard University (Arya Tschand, Jeffrey Ma, Vijay Janapa Reddi), AMD (Muhammad Awad, Ryan Swann, Keith Lowery, Ganesh Dasika), Stanford University (Kesavan Ramakrishnan)
 - downstream task: LLM-based GPU kernel performance optimization
   - AMD Instinct MI300X의 disaggregated XCD 구조에서 Triton kernel의 program ID를 재배치하여 per-XCD L2 locality를 높이는 **swizzling pattern 생성**
@@ -120,9 +120,9 @@ SwizzlePerf는 매 iteration마다 다음 네 요소를 연결함.
 - 다음 호출은 broken mapping, L2 변화가 없던 mapping을 보고 다른 remapping을 제안
 - correctness를 통과한 후보를 L2 hit rate로 rank하고 best-so-far kernel을 반환
 
-figure3 첨부 (hardware-aware LLM input prompt 구조)
+![hardware-aware LLM input prompt 구조](../images/2026-11-19/image-20261121145148654.png)
 
-figure4 첨부 (DSPy output signature와 이전 시도 reflection 구조)
+![DSPy output signature와 이전 시도 reflection 구조](../images/2026-11-19/image-20261121145241617.png)
 
 # 5. Hardware-Aware Swizzling Patterns
 
@@ -144,7 +144,13 @@ $$
 - contiguous tile group을 같은 XCD가 담당하도록 PID를 바꾸되, ceiling division으로 block 수가 XCD 수의 배수가 아닌 경우도 처리
 - GEMM은 L2 hit rate가 **+14.1pp** 증가하지만 compute-bound여서 speedup은 **1.03×**에 그침
 
-figure5 첨부 (GEMM tile-to-XCD mapping과 생성된 Triton swizzling code)
+GEMM tile-to-XCD mapping과 생성된 Triton swizzling code
+
+![](../images/2026-11-19/image-20261121145916983.png)
+
+- b_per_xcd: XCD 당 처리할 최대한의 block 수
+- 나머지 (pid // num_xcds): XCD 그룹 번호
+- 몫 (pid % num_xcds): 그 XCD 안에서 처리될 순서
 
 ## 5.2 Kernel-Specific Mapping
 
@@ -154,15 +160,15 @@ figure5 첨부 (GEMM tile-to-XCD mapping과 생성된 Triton swizzling code)
 - **Stencil 2D**: M/N 방향의 neighbor tile을 같은 L2에 배치 $\to$ **+69.9pp**, **1.29×**
 - **Transpose**: input row와 대응 output column band를 같은 XCD가 담당 $\to$ **+40.9pp**, **2.06×**
 
-figure6 첨부 (LayerNorm swizzling pattern)
+![LayerNorm swizzling pattern](../images/2026-11-19/image-20261121152009247.png)
 
-figure7 첨부 (Softmax swizzling pattern)
+![Softmax swizzling pattern](../images/2026-11-19/image-20261121152024360.png)
 
-figure8 첨부 (FDTD 2D swizzling pattern)
+![FDTD 2D swizzling pattern](../images/2026-11-19/image-20261121152045269.png)
 
-figure9 첨부 (Stencil 2D swizzling pattern)
+![Stencil 2D swizzling pattern](../images/2026-11-19/image-20261121152108281.png)
 
-figure10 첨부 (Transpose swizzling pattern)
+![Transpose swizzling pattern](../images/2026-11-19/image-20261121152129614.png)
 
 # 6. Experiments
 
@@ -184,20 +190,7 @@ figure10 첨부 (Transpose swizzling pattern)
 
 ## 6.2 Main Results
 
-figure2 첨부 (10개 kernel의 L2 hit rate 개선과 end-to-end speedup)
-
-| Kernel | L2 hit rate 개선 | Speedup |
-|---|---:|---:|
-| Fused Elementwise | 0pp | 1.00× |
-| naive SpMV | +8.3pp | 1.00× |
-| GEMM | +14.1pp | 1.03× |
-| LayerNorm | +33.7pp | 1.09× |
-| Softmax | +66.5pp | 1.54× |
-| Transpose | +40.9pp | **2.06×** |
-| Black-Scholes | +1.8pp | 1.00× |
-| Smith-Waterman | +3.8pp | 1.17× |
-| Stencil 2D | **+69.9pp** | 1.29× |
-| FDTD 2D | +19.7pp | 1.73× |
+![10개 kernel의 L2 hit rate 개선과 end-to-end speedup](../images/2026-11-19/image-20261121152817152.png)
 
 - 평균 speedup **1.29×**, L2 hit rate 평균 개선 **+23.9pp**
 - 4개 kernel의 swizzled implementation은 L2 hit rate가 거의 100%에 도달
@@ -218,11 +211,11 @@ $\to$ L2 hit rate는 **swizzling이 의도대로 locality를 바꿨는지** 보�
   - 그러나 tile count, block size, XCD 수가 바뀌면 reuse가 깨지고, bijectivity를 위반하여 non-existent block을 가리키는 correctness failure가 발생
 - 필터링된 context의 장점은 정보량 자체보다 **현재 병목과 mapping constraint에 필요한 정보만 남기는 것**
 
-figure11 첨부 (hardware-aware Transpose swizzling code)
+![hardware-aware Transpose swizzling code](../images/2026-11-19/image-20261121153843202.png)
 
-figure12 첨부 (hardware-unaware Transpose mapping)
+![hardware-unaware Transpose mapping](../images/2026-11-19/image-20261121153909742.png)
 
-figure13 첨부 (hardware-overload가 만든 bitwise swizzling code)
+![hardware-overload가 만든 bitwise swizzling code](../images/2026-11-19/image-20261121153929314.png)
 
 ## 6.4 Optimization Progression
 
@@ -232,7 +225,7 @@ figure13 첨부 (hardware-overload가 만든 bitwise swizzling code)
 - Softmax와 LayerNorm은 여러 iteration 뒤에야 성공 pattern에 수렴
 - history buffer가 단순 best-of-$N$ search를 넘어 실패 원인을 다음 proposal에 전달한다는 정성적 증거
 
-figure14 첨부 (GEMM·Stencil 2D·SpMV·Softmax·LayerNorm의 iteration별 L2 hit rate)
+![GEMM·Stencil 2D·SpMV·Softmax·LayerNorm의 iteration별 L2 hit rate](../images/2026-11-19/image-20261121154029219.png)
 
 ## 6.5 Generalization Across Problem Sizes
 
@@ -242,7 +235,7 @@ figure14 첨부 (GEMM·Stencil 2D·SpMV·Softmax·LayerNorm의 iteration별 L2 h
   - unswizzled: 65% $\to$ 53%로 감소
   - swizzled: 74–82% 유지
 
-figure15 첨부 (LayerNorm·Smith-Waterman·Stencil 2D의 problem size별 L2 hit rate)
+![LayerNorm·Smith-Waterman·Stencil 2D의 problem size별 L2 hit rate](../images/2026-11-19/image-20261121154257399.png)
 
 ## 6.6 Different LLMs
 
@@ -252,7 +245,7 @@ figure15 첨부 (LayerNorm·Smith-Waterman·Stencil 2D의 problem size별 L2 hit
 - Smith-Waterman: o3-mini가 4o와 4.1-mini보다 높은 L2 hit rate
 - reasoning model이 항상 우수하지 않으며, 적합한 모델은 kernel·architecture·problem size에 따라 달라짐
 
-figure16 첨부 (4o·4.1-mini·o3-mini별 생성 pattern의 L2 hit rate와 4o speedup)
+![4o·4.1-mini·o3-mini별 생성 pattern의 L2 hit rate와 4o speedup](../images/2026-11-19/image-20261121154343112.png)
 
 # 7. Conclusion & Limitations
 
